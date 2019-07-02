@@ -1,0 +1,24 @@
+{
+  "name": "sample-frontend-nextjs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "author": "Alexander Graebe <alex.graebe@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "antd": "^3.20.0",
+    "babel-plugin-import": "^1.12.0",
+    "next": "^8.1.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-google-maps": "^9.4.5",
+    "styled-components": "^4.3.2"
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "^1.10.6"
+  }
+}
