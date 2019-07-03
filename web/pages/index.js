@@ -29,19 +29,19 @@ class Index extends React.Component {
       this.setState({ location });
     });
 
-    this.socket.on('activity', location => {
+    this.socket.on('activity', activity => {
       this.setState({ activity });
     });
 
-    this.socket.on('health', location => {
+    this.socket.on('health', health => {
       this.setState({ health });
     });
 
-    this.socket.on('summary', location => {
+    this.socket.on('summary', summary => {
       this.setState({ summary });
     });
 
-    this.socket.on('trip', location => {
+    this.socket.on('trip', trip => {
       this.setState({ trip });
     });
   }
@@ -62,7 +62,9 @@ class Index extends React.Component {
       </GoogleMap>
     ));
 
-    const coordinates = { lat: _.get(this.state.location, 'data.location.coordinates[0]'), lng: _.get(this.state.location, 'data.location.coordinates[1]') };
+    const coordinates = { lat: _.get(this.state.location, 'data.location.coordinates[1]'), lng: _.get(this.state.location, 'data.location.coordinates[0]') };
+
+    console.log(coordinates);
 
     return (
       <div>
