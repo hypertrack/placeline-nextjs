@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import moment from 'moment';
 
+import DeviceList from '../components/deviceList';
 
 class Index extends React.Component {
   constructor(props) {
@@ -19,25 +20,30 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = io('https://ht-dev-ag.localtunnel.me');
+    this.socket = io(process.env.SERVER_URL);
 
     this.socket.on('location', location => {
+      console.log(location);
       notification.success({
         message: `Received new location update`,
         description: `Device ID: ${location.device_id}`
       });
+
       this.setState({ location });
     });
 
     this.socket.on('activity', activity => {
+      console.log(activity);
       this.setState({ activity });
     });
 
     this.socket.on('health', health => {
+      console.log(health);
       this.setState({ health });
     });
 
     this.socket.on('summary', summary => {
+      console.log(summary);
       this.setState({ summary });
     });
 
@@ -64,8 +70,6 @@ class Index extends React.Component {
 
     const coordinates = { lat: _.get(this.state.location, 'data.location.coordinates[1]'), lng: _.get(this.state.location, 'data.location.coordinates[0]') };
 
-    console.log(coordinates);
-
     return (
       <div>
             <MyMapComponent
@@ -76,6 +80,7 @@ class Index extends React.Component {
                 containerElement={<div style={{ height: `100vh` }} />}
                 mapElement={<div style={{ height: `100%` }} />}
             />
+            <DeviceList />
         </div>
     );
   }
