@@ -1,35 +1,8 @@
-import { List, Avatar } from 'antd';
+import { List, Avatar, Badge } from 'antd';
 import styled from 'styled-components';
-import axios from 'axios';
+import moment from 'moment';
 
 class DeviceList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      devices: undefined,
-      loading: false,
-      error: undefined
-    };
-  }
-
-  componentDidMount() {
-    // get all devices from HyperTrack
-    const options = {
-        method: 'get',
-        url: `${process.env.SERVER_URL}/devices`
-    };
-
-    this.setState({ loading: true });
-
-    axios(options)
-    .then(resp => {
-        this.setState({ devices: resp.data, loading: false });
-    })
-    .catch(error => {
-        this.setState({ loading: false, error });
-    });
-  }
-
   render() {
     const StyledList = styled(List)`
       position: fixed;
@@ -45,14 +18,13 @@ class DeviceList extends React.Component {
                 itemLayout="horizontal"
                 bordered
                 header={<div><b>Devices</b></div>}
-                loading={this.state.loading}
-                dataSource={this.state.devices}
-                renderItem={item => (
-                    <List.Item>
+                dataSource={this.props.devices}
+                renderItem={(item, i) => (
+                    <List.Item actions={[<a onClick={(e) => this.props.onSummary(i, e)}>{(this.props.devices[i].summary) ? 'summary': ''}</a>]}>
                         <List.Item.Meta
-                            avatar={<Avatar shape="square" src={`../static/status/${item.device_status}.svg`} />}
-                            title={item.device_id}
-                            description={`Last updated at: ${item.updatedAt}`}
+                            avatar={<Badge status={(item.device_status === 'disconnected' || item.device_status === 'inactive')? 'error' : 'success'}><Avatar shape="square" src={`../static/status/${item.device_status}.svg`} /></Badge>}
+                            title={item.device_info.name || item.device_id}
+                            description={moment(item.updatedAt).format("MMMM Do YYYY, h:mm:ss a")}
                         />
                     </List.Item>
                 )} />
