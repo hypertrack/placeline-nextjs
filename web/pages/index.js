@@ -1,5 +1,3 @@
-import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
-import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
 import { notification, Modal, Button, Statistic, Row, Col, Timeline } from 'antd';
 import io from 'socket.io-client';
 import _ from 'lodash';
@@ -7,6 +5,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 import DeviceList from '../components/deviceList';
+import Map from '../components/map';
 
 class Index extends React.Component {
   constructor(props) {
@@ -32,7 +31,7 @@ class Index extends React.Component {
       console.log(location);
       notification.success({
         message: `Received new location update`,
-        description: `Device ID: ${location.device_id}`
+        description: `Device: ${location.device_id}`
       });
 
       let devices = this.state.devices;
@@ -93,41 +92,24 @@ class Index extends React.Component {
   }
 
   render() {
-    const MyMapComponent = withScriptjs(withGoogleMap((props) => {
-      const markerItems = props.devices.map((device) =>
-      <MarkerWithLabel
-        key={`label-${device.device_id}`}
-        position={{ lat: _.get(device,'location.data.location.coordinates[1]'), lng: _.get(device,'location.data.location.coordinates[0]')}}
-        labelAnchor={new google.maps.Point(100, -15)}>
-        <div>{device.device_id}</div>
-      </MarkerWithLabel>
-      );
-
-      return (<GoogleMap
-        defaultZoom={12}
-        defaultCenter={ {lat: 37.7933412, lng: -122.3995876} } >
-        {markerItems}
-      </GoogleMap>);
-    }
-    ));
-
     const summary = _.get(this.state, `devices[${this.state.summary}].summary`);
 
     const timelineStyle = {
-      margin: '50px 0'
+      margin: '50px 0 0 0'
     };
 
+    const segments = _.get(summary, 'data.segments', []);
     const summarySegments = [];
+
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+
+      summarySegments.push(<Timeline.Item key={`segment-${i}`}>{`${segment.type} activity for ${moment.duration(segment.duration, 's').humanize()} (${segment.distance} km)`}</Timeline.Item>);
+    }
 
     return (
       <div>
-            <MyMapComponent
-                devices={this.state.devices}
-                googleMapURL='https://maps.googleapis.com/maps/api/js?key=AIzaSyD6V1v4K6l_nm-W9KdCLMObqDgU0znIt-w&v=3.exp&libraries=geometry,drawing,places'
-                loadingElement={<div style={{ height: `100%` }} />}
-                containerElement={<div style={{ height: `100vh` }} />}
-                mapElement={<div style={{ height: `100%` }} />}
-            />
+            <Map devices={this.state.devices} />
             <DeviceList devices={this.state.devices} onSummary={this.onSummary} />
             <Modal
               title="Most recent summary"
@@ -151,9 +133,14 @@ class Index extends React.Component {
                   <Col span={16} style={timelineStyle}>
                     <Timeline>
                       <Timeline.Item color="green">{`Started on ${moment(_.get(summary, 'data.start_datetime', '')).format("MMMM Do YYYY, h:mmA")}`}</Timeline.Item>
-                      <Timeline.Item>To do: Segments in between</Timeline.Item>
+                      {summarySegments}
                       <Timeline.Item color="red">{`Ended on ${moment(_.get(summary, 'data.end_datetime', '')).format("MMMM Do YYYY, h:mmA")}`}</Timeline.Item>
                     </Timeline>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <Map segments={segments} />
                   </Col>
                 </Row>
             </Modal>
