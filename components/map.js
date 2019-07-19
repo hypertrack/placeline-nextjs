@@ -48,9 +48,11 @@ class Map extends React.Component {
       height: this.props.segments ? `200px` :`100vh`
     };
 
+    const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${process.env.GMAPS_KEY}&v=3.exp&libraries=geometry,drawing,places`;
+
     return (<div>
         <MyMapComponent
-            googleMapURL='https://maps.googleapis.com/maps/api/js?key=AIzaSyD6V1v4K6l_nm-W9KdCLMObqDgU0znIt-w&v=3.exp&libraries=geometry,drawing,places'
+            googleMapURL={googleMapURL}
             loadingElement={<div style={{ height: `100%` }} />}
             containerElement={<div style={containerStyle} />}
             mapElement={<div style={{ height: `100%` }} />}
