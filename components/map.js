@@ -1,5 +1,6 @@
 import { withScriptjs, withGoogleMap, GoogleMap, Polyline } from 'react-google-maps';
 import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
+import _ from 'lodash';
 
 class Map extends React.Component {
   render() {
@@ -18,14 +19,16 @@ class Map extends React.Component {
           );
         }
 
-        if(this.props.segments) {
+        if(_.get(this.props, 'segments.length', 0) > 0) {
           polyLines = this.props.segments.map((segment, s) => {
             const polyline = segment.polyline;
             let path = [];
 
-            for (let i = 0; i < polyline.length; i++) {
-              const coordinates = polyline[i];
-              path.push({lat: coordinates[0], lng: coordinates[1]});
+            if(_.get(polyline, 'length', 0) > 0) {
+              for (let i = 0; i < polyline.length; i++) {
+                const coordinates = polyline[i];
+                path.push({lat: coordinates[0], lng: coordinates[1]});
+              }
             }
 
             return (<Polyline
@@ -36,7 +39,7 @@ class Map extends React.Component {
         }
 
         return (<GoogleMap
-          defaultZoom={13}
+          defaultZoom={this.props.zoom || 12}
           defaultCenter={ {lat: 37.7933412, lng: -122.3995876} } >
           {markerItems}
           {polyLines}

@@ -21,7 +21,7 @@ class DeviceList extends React.Component {
                 header={<div><b>Devices</b></div>}
                 dataSource={this.props.devices}
                 renderItem={(item, i) => (
-                    <List.Item actions={[<a onClick={(e) => this.props.onSummary(i, e)}>{(this.props.devices[i].summary) ? 'summary': ''}</a>]}>
+                    <List.Item actions={[<a onClick={(e) => this.props.onSummary(i, e)}>placeline</a>]}>
                         <List.Item.Meta
                             avatar={<Badge status={(item.device_status === 'disconnected' || item.device_status === 'inactive')? 'error' : 'success'}><Avatar shape="square" src={`../static/status/${item.device_status}.svg`} /></Badge>}
                             title={_.get(item, 'device_info.name', item.device_id)}
