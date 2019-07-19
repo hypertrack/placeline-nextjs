@@ -1,0 +1,15 @@
+{
+    "name": "Sample Frontend NextJS",
+    "description": "Sample NextJS frontend integration for Placeline application",
+    "repository": "https://github.com/hypertrack/sample-frontend-nextjs",
+    "logo": "https://docs.hypertrack.com/images/logo.png",
+    "keywords": [
+        "sample",
+        "hypertrack",
+        "placeline",
+        "integration",
+        "nextjs",
+        "react",
+        "google-maps"
+    ]
+  }

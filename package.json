@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next & lt --subdomain hypertrack-frontend-agraebe --port 3000",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p $PORT"
   },
   "author": "Alexander Graebe <agraebe@hypertrack.com>",
   "license": "MIT",
