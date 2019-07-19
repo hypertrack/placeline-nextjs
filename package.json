@@ -1,5 +1,6 @@
 {
   "name": "sample-frontend-nextjs",
+  "description": "Sample NextJS frontend integration for Placeline application",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,8 +8,22 @@
     "build": "next build",
     "start": "next start"
   },
-  "author": "Alexander Graebe <alex.graebe@gmail.com>",
+  "author": "Alexander Graebe <agraebe@hypertrack.com>",
   "license": "MIT",
+  "keywords": [
+    "sample",
+    "hypertrack",
+    "placeline",
+    "integration",
+    "nextjs",
+    "react",
+    "antd",
+    "google-maps",
+    "heroku"
+  ],
+  "engines": {
+    "node": "10.x"
+  },
   "dependencies": {
     "antd": "^3.20.0",
     "axios": "^0.19.0",
