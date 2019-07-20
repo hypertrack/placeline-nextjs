@@ -1,8 +1,24 @@
 {
     "name": "Sample Frontend NextJS",
+    "website": "https://www.hypertrack.com/",
+    "success_url": "/",
     "description": "Sample NextJS frontend integration for Placeline application",
+    "addons": ["papertrail:choklad"],
+    "buildpacks": [{
+        "url": "heroku/nodejs"
+    }],
+    "env": {
+        "GMAPS_KEY": {
+            "description": "Your Google Maps Key from https://developers.google.com/maps/documentation/javascript/get-api-key",
+            "value": ""
+        },
+        "SERVER_URL": {
+            "description": "Your backend server URL, for instance from https://github.com/hypertrack/sample-backend-nodejs deployment",
+            "value": ""
+        }
+    },
     "repository": "https://github.com/hypertrack/sample-frontend-nextjs",
-    "logo": "https://docs.hypertrack.com/images/logo.png",
+    "logo": "https://dashboard.hypertrack.com/assets/hypertrack-bw.svg",
     "keywords": [
         "sample",
         "hypertrack",
