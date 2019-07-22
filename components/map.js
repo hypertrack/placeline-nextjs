@@ -1,5 +1,4 @@
-import { withScriptjs, withGoogleMap, GoogleMap, Polyline } from 'react-google-maps';
-import { MarkerWithLabel } from 'react-google-maps/lib/components/addons/MarkerWithLabel';
+import { withScriptjs, withGoogleMap, GoogleMap, Polyline, Marker } from 'react-google-maps';
 import _ from 'lodash';
 
 class Map extends React.Component {
@@ -10,12 +9,16 @@ class Map extends React.Component {
 
         if(this.props.devices) {
           markerItems = this.props.devices.map((device) =>
-          <MarkerWithLabel
+          <Marker
+            options={{
+              icon: {
+                url: '../static/map/live.svg',
+                scaledSize: { width: 32, height: 32 },
+                size: { width: 64, height: 64 }
+              }
+            }}
             key={`label-${device.device_id}`}
-            position={{ lat: _.get(device,'location.data.location.coordinates[1]'), lng: _.get(device,'location.data.location.coordinates[0]')}}
-            labelAnchor={new google.maps.Point(100, -15)}>
-            <div>{device.device_id}</div>
-          </MarkerWithLabel>
+            position={{ lat: _.get(device,'location.data.location.coordinates[1]'), lng: _.get(device,'location.data.location.coordinates[0]')}} />
           );
         }
 
@@ -40,26 +43,21 @@ class Map extends React.Component {
 
         return (<GoogleMap
           defaultZoom={this.props.zoom || 12}
-          defaultCenter={ {lat: 37.7933412, lng: -122.3995876} } >
+          defaultCenter={ {lat: 37.7933412, lng: -122.3995876} }
+          defaultOptions={{ styles: require('../static/map/GoogleMapStyles.json') }} >
           {markerItems}
           {polyLines}
         </GoogleMap>);
       }
     ));
 
-    const containerStyle = {
-      height: this.props.segments ? `200px` :`100vh`
-    };
-
-    const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${process.env.GMAPS_KEY}&v=3.exp&libraries=geometry,drawing,places`;
-
     return (<div>
-        <MyMapComponent
-            googleMapURL={googleMapURL}
-            loadingElement={<div style={{ height: `100%` }} />}
-            containerElement={<div style={containerStyle} />}
-            mapElement={<div style={{ height: `100%` }} />}
-        />
+      <MyMapComponent
+        googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GMAPS_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+        loadingElement={<div style={{ height: `100%` }} />}
+        containerElement={<div style={{ height: this.props.segments ? `200px` :`100vh` }} />}
+        mapElement={<div style={{ height: `100%` }} />}
+      />
     </div>);
   }
 }

@@ -7,10 +7,10 @@ class DeviceList extends React.Component {
   render() {
     const StyledList = styled(List)`
       position: fixed;
-      width: 450px;
-      bottom: 10px;
-      left: 10px;
-      background-color: white;
+      width: 50%;
+      bottom: 0px;
+      left: 25%;
+      background-color: #FCFCFC;
     `;
 
     return (

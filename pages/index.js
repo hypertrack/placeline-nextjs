@@ -3,20 +3,16 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import axios from 'axios';
 
-import DeviceList from '../components/deviceList';
+import DeviceSelection from '../components/deviceSelection';
 import Map from '../components/map';
-import SummaryView from '../components/summaryView';
 
 class Index extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      devices: [],
-      summary: false
-    };
 
-    // This binding is necessary to make `this` work in the callback
-    this.onSummary = this.onSummary.bind(this);
+    this.state = {
+      devices: []
+    };
   }
 
   componentDidMount() {
@@ -122,24 +118,12 @@ class Index extends React.Component {
     });
   }
 
-  onSummary(id) {
-    this.setState({ summary: id });
-  }
-
   render() {
     return (
       <div>
-            <Map devices={this.state.devices} />
-            <DeviceList
-              devices={this.state.devices}
-              onSummary={this.onSummary} />
-            <SummaryView
-              summaries={_.get(this.state, `devices[${this.state.summary}].summaries`, [])}
-              visible={this.state.summary !== false}
-              onClose={e => {
-                this.setState({ summary: false });
-              }} />
-        </div>
+        <Map devices={this.state.devices} />
+        <DeviceSelection devices={this.state.devices} />
+      </div>
     );
   }
 }
