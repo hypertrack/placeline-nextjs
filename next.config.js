@@ -13,6 +13,12 @@ module.exports = {
     // Setup dotenv
     config.plugins.push(new webpack.EnvironmentPlugin(localEnv));
 
+    // enable SVG processing
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"]
+    });
+
     return config;
   },
   webpackDevMiddleware: config => {

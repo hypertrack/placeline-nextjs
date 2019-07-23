@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import moment from "moment";
 import _ from "lodash";
+import SVG from "react-inlinesvg";
 
 import Map from "../components/map";
 
@@ -90,30 +91,34 @@ class Placeline extends React.Component {
   }
 
   renderSegments(segments) {
-    return segments.map((segment, i) => (
-      <Timeline.Item key={`segment-${i}`}>{`${moment(
-        segment.start_datetime
-      ).format("MMMM Do YYYY, h:mmA")} - ${moment(segment.end_datetime).format(
-        "MMMM Do YYYY, h:mmA"
-      )}: ${this.capitalizeFirstLetter(segment.type)} from ${
-        segment.start_place
-      } to ${segment.end_place} (${segment.distance0} m | ${
-        segment.steps
-      } steps | ${moment
-        .duration(segment.duration, "s")
-        .humanize()})`}</Timeline.Item>
-    ));
+    return segments.map((segment, i) => {
+      const activitySvg = () => (
+        <SVG src={`../static/status/${segment.type}.svg`} />
+      );
+
+      return (
+        <Timeline.Item
+          key={`segment-${i}`}
+          dot={<Icon component={activitySvg} style={{ fontSize: "16px" }} />}
+        >{`${moment(segment.start_datetime).format(
+          "MMMM Do YYYY, h:mmA"
+        )} - ${moment(segment.end_datetime).format(
+          "MMMM Do YYYY, h:mmA"
+        )}: ${this.capitalizeFirstLetter(segment.type)} from ${
+          segment.start_place
+        } to ${segment.end_place} (${segment.distance0} m | ${
+          segment.steps
+        } steps | ${moment
+          .duration(segment.duration, "s")
+          .humanize()})`}</Timeline.Item>
+      );
+    });
   }
 
-  render() {
-    const { Header, Content } = Layout;
+  renderTimeline(currentSummaries) {
     const { Panel } = Collapse;
-    const { RangePicker } = DatePicker;
-
-    const currentSummaries = this.selectSummaries();
 
     const customPanelStyle = {
-      background: "#f0f2f5",
       borderRadius: 0,
       paddingTop: 25,
       paddingBottom: 25,
@@ -121,6 +126,73 @@ class Placeline extends React.Component {
       border: 0,
       overflow: "hidden"
     };
+
+    return (
+      <Collapse
+        bordered={false}
+        expandIcon={({ isActive }) => (
+          <Icon type="caret-right" rotate={isActive ? 90 : 0} />
+        )}
+        defaultActiveKey={["1"]}
+      >
+        <Panel header="Timeline" key="1" style={customPanelStyle}>
+          <Timeline>
+            <Timeline.Item
+              dot={<Icon type="play-circle" style={{ fontSize: "16px" }} />}
+            >{`${moment(currentSummaries.start_datetime).format(
+              "MMMM Do YYYY, h:mmA"
+            )}: Started activity`}</Timeline.Item>
+            {this.renderSegments(currentSummaries.segments)}
+            <Timeline.Item
+              dot={<Icon type="check-circle" style={{ fontSize: "16px" }} />}
+            >{`${moment(currentSummaries.end_datetime).format(
+              "MMMM Do YYYY, h:mmA"
+            )}: Completed activity`}</Timeline.Item>
+          </Timeline>
+        </Panel>
+      </Collapse>
+    );
+  }
+
+  renderOverview(currentSummaries) {
+    return (
+      <div>
+        <Skeleton active loading={this.state.loading} />
+        {!this.state.loading && (
+          <div>
+            <Col span={8}>
+              <Statistic
+                title="Duration"
+                value={moment
+                  .duration(currentSummaries.duration, "s")
+                  .humanize()}
+              />
+            </Col>
+            <Col span={8}>
+              <Statistic
+                title="Distance"
+                value={currentSummaries.distance}
+                suffix="m"
+              />
+            </Col>
+            <Col span={8}>
+              <Statistic
+                title="Steps"
+                value={currentSummaries.steps}
+                suffix="steps"
+              />
+            </Col>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  render() {
+    const { Header, Content } = Layout;
+    const { RangePicker } = DatePicker;
+
+    const currentSummaries = this.selectSummaries();
 
     return (
       <Layout>
@@ -158,62 +230,11 @@ class Placeline extends React.Component {
             </Col>
           </Row>
           <Row style={{ background: "#fff", padding: 24 }}>
-            <Skeleton active loading={this.state.loading} />
-            {!this.state.loading && (
-              <div>
-                <Col span={8}>
-                  <Statistic
-                    title="Duration"
-                    value={moment
-                      .duration(currentSummaries.duration, "s")
-                      .humanize()}
-                  />
-                </Col>
-                <Col span={8}>
-                  <Statistic
-                    title="Distance"
-                    value={currentSummaries.distance}
-                    suffix="m"
-                  />
-                </Col>
-                <Col span={8}>
-                  <Statistic
-                    title="Steps"
-                    value={currentSummaries.steps}
-                    suffix="steps"
-                  />
-                </Col>
-              </div>
-            )}
+            {this.renderOverview(currentSummaries)}
           </Row>
-          <Skeleton active loading={this.state.loading} />
-          {!this.state.loading && (
-            <Collapse
-              bordered={false}
-              expandIcon={({ isActive }) => (
-                <Icon type="caret-right" rotate={isActive ? 90 : 0} />
-              )}
-              defaultActiveKey={["1"]}
-            >
-              <Panel header="Timeline" key="1" style={customPanelStyle}>
-                <Timeline>
-                  <Timeline.Item color="green">{`${moment(
-                    currentSummaries.start_datetime
-                  ).format(
-                    "MMMM Do YYYY, h:mmA"
-                  )}: Started activity`}</Timeline.Item>
-                  {this.renderSegments(currentSummaries.segments)}
-                  <Timeline.Item color="red">{`${moment(
-                    currentSummaries.end_datetime
-                  ).format(
-                    "MMMM Do YYYY, h:mmA"
-                  )}: Completed activity`}</Timeline.Item>
-                </Timeline>
-              </Panel>
-            </Collapse>
-          )}
+          {!this.state.loading && this.renderTimeline(currentSummaries)}
+          <Map segments={currentSummaries.segments} />
         </Content>
-        <Map segments={currentSummaries.segments} />
       </Layout>
     );
   }
