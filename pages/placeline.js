@@ -20,9 +20,8 @@ class Placeline extends React.Component {
 
     this.state = {
       summaries: [],
-      startDate: moment(),
+      startDate: moment(new Date()).add(-1, "days"),
       endDate: moment(),
-      currentSummary: 0,
       loading: true
     };
   }
@@ -52,7 +51,6 @@ class Placeline extends React.Component {
     axios(options).then(resp => {
       this.setState({
         summaries: resp.data,
-        currentSummary: 0,
         loading: false
       });
     });
@@ -60,6 +58,33 @@ class Placeline extends React.Component {
 
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  selectSummaries() {
+    let segments = [],
+      duration = 0,
+      distance = 0,
+      steps = 0;
+
+    for (let i = 0; i < this.state.summaries.length; i++) {
+      const summary = this.state.summaries[i];
+
+      if (moment(summary.start_datetime).isAfter(this.state.startDate, "day")) {
+        segments = _.concat(segments, summary.segments);
+        duration += summary.duration;
+        distance += summary.distance;
+        steps += summary.steps;
+      }
+    }
+
+    return {
+      segments,
+      duration,
+      distance,
+      steps,
+      start_datetime: this.state.startDate,
+      end_datetime: this.state.endDate
+    };
   }
 
   renderSegments(segments) {
@@ -70,7 +95,7 @@ class Placeline extends React.Component {
         "MMMM Do YYYY, h:mmA"
       )}: ${this.capitalizeFirstLetter(segment.type)} from ${
         segment.start_place
-      } to ${segment.end_place} (${segment.distance / 1000} km | ${
+      } to ${segment.end_place} (${segment.distance0} m | ${
         segment.steps
       } steps | ${moment
         .duration(segment.duration, "s")
@@ -86,11 +111,9 @@ class Placeline extends React.Component {
     const { Header, Content } = Layout;
     const { RangePicker } = DatePicker;
 
-    const segments = _.get(
-      this.state.summaries,
-      `[${this.state.currentSummary}].segments`,
-      []
-    );
+    const currentSummaries = this.selectSummaries();
+
+    console.log(currentSummaries);
 
     return (
       <Layout>
@@ -127,36 +150,21 @@ class Placeline extends React.Component {
                   <Statistic
                     title="Duration"
                     value={moment
-                      .duration(
-                        _.get(
-                          this.state.summaries,
-                          `[${this.state.currentSummary}].duration`,
-                          0
-                        ),
-                        "s"
-                      )
+                      .duration(currentSummaries.duration, "s")
                       .humanize()}
                   />
                 </Col>
                 <Col span={8}>
                   <Statistic
                     title="Distance"
-                    value={_.get(
-                      this.state.summaries,
-                      `[${this.state.currentSummary}].distance`,
-                      0
-                    )}
-                    suffix="km"
+                    value={currentSummaries.distance}
+                    suffix="m"
                   />
                 </Col>
                 <Col span={8}>
                   <Statistic
                     title="Steps"
-                    value={_.get(
-                      this.state.summaries,
-                      `[${this.state.currentSummary}].steps`,
-                      0
-                    )}
+                    value={currentSummaries.steps}
                     suffix="steps"
                   />
                 </Col>
@@ -170,21 +178,13 @@ class Placeline extends React.Component {
                 <Col span={24} style={timelineStyle}>
                   <Timeline>
                     <Timeline.Item color="green">{`${moment(
-                      _.get(
-                        this.state.summaries,
-                        `[${this.state.currentSummary}].start_datetime`,
-                        ""
-                      )
+                      currentSummaries.start_datetime
                     ).format(
                       "MMMM Do YYYY, h:mmA"
                     )}: Started activity`}</Timeline.Item>
-                    {this.renderSegments(segments)}
+                    {this.renderSegments(currentSummaries.segments)}
                     <Timeline.Item color="red">{`${moment(
-                      _.get(
-                        this.state.summaries,
-                        `[${this.state.currentSummary}].end_datetime`,
-                        ""
-                      )
+                      currentSummaries.end_datetime
                     ).format(
                       "MMMM Do YYYY, h:mmA"
                     )}: Completed activity`}</Timeline.Item>
@@ -194,7 +194,7 @@ class Placeline extends React.Component {
             )}
           </Row>
         </Content>
-        <Map segments={segments} />
+        <Map segments={currentSummaries.segments} />
       </Layout>
     );
   }
