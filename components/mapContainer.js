@@ -68,6 +68,10 @@ class MapContainer extends Component {
             this.props.devices.map((device, i) => (
               <LocationMarker
                 key={`location-${i}`}
+                offline={
+                  _.get(device, "device_status", "") === "disconnected" ||
+                  _.get(device, "device_status", "") === "inactive"
+                }
                 lat={_.get(device, "location.data.location.coordinates[1]")}
                 lng={_.get(device, "location.data.location.coordinates[0]")}
               />

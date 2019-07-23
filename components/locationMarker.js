@@ -7,7 +7,9 @@ class LocationMarker extends Component {
       <Marker
         options={{
           icon: {
-            url: "../static/map/live.svg",
+            url: this.props.offline
+              ? "../static/map/offline.svg"
+              : "../static/map/live.svg",
             scaledSize: { width: 32, height: 32 }
           }
         }}
