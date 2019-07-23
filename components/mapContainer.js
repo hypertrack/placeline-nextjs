@@ -51,7 +51,13 @@ class MapContainer extends Component {
         ref={elem => (this.map = elem)}
         zoom={15}
         center={this.getBounds()}
-        options={{ styles: require("../static/map/GoogleMapStyles.json") }}
+        options={{
+          styles: require("../static/map/GoogleMapStyles.json"),
+          disableDefaultUI: true,
+          draggable: true,
+          scaleControl: true,
+          scrollwheel: true
+        }}
       >
         <Fragment>
           {this.props.segments &&

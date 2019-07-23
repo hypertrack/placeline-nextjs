@@ -5,7 +5,8 @@ import {
   Col,
   Timeline,
   PageHeader,
-  DatePicker
+  DatePicker,
+  Skeleton
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -19,6 +20,8 @@ class Placeline extends React.Component {
 
     this.state = {
       summaries: [],
+      startDate: moment(),
+      endDate: moment(),
       currentSummary: 0,
       loading: true
     };
@@ -32,8 +35,11 @@ class Placeline extends React.Component {
     this.getSummaries();
   }
 
-  onDateChange(date, dateString) {
-    console.log(date, dateString);
+  onDateChange(date) {
+    this.setState({
+      startDate: date[0],
+      endDate: date[1]
+    });
   }
 
   getSummaries() {
@@ -73,10 +79,6 @@ class Placeline extends React.Component {
   }
 
   render() {
-    if (!this.state.summaries || this.state.loading) {
-      return <div>Loading ...</div>;
-    }
-
     const timelineStyle = {
       margin: "50px 0 0 0"
     };
@@ -99,7 +101,8 @@ class Placeline extends React.Component {
             subTitle={`${this.props.query.id}`}
             extra={
               <RangePicker
-                onChange={this.onDateChange}
+                onChange={date => this.onDateChange(date)}
+                value={[this.state.startDate, this.state.endDate]}
                 ranges={{
                   Today: [moment(), moment()],
                   "This Week": [
@@ -117,75 +120,81 @@ class Placeline extends React.Component {
         </Header>
         <Content style={{ padding: "0 50px" }}>
           <Row style={{ background: "#fff", padding: 24 }}>
-            <Col span={8}>
-              <Statistic
-                title="Duration"
-                value={moment
-                  .duration(
-                    _.get(
+            <Skeleton active loading={this.state.loading} />
+            {!this.state.loading && (
+              <div>
+                <Col span={8}>
+                  <Statistic
+                    title="Duration"
+                    value={moment
+                      .duration(
+                        _.get(
+                          this.state.summaries,
+                          `[${this.state.currentSummary}].duration`,
+                          0
+                        ),
+                        "s"
+                      )
+                      .humanize()}
+                  />
+                </Col>
+                <Col span={8}>
+                  <Statistic
+                    title="Distance"
+                    value={_.get(
                       this.state.summaries,
-                      `[${this.state.currentSummary}].duration`,
+                      `[${this.state.currentSummary}].distance`,
                       0
-                    ),
-                    "s"
-                  )
-                  .humanize()}
-              />
-            </Col>
-            <Col span={8}>
-              <Statistic
-                title="Distance"
-                value={_.get(
-                  this.state.summaries,
-                  `[${this.state.currentSummary}].distance`,
-                  0
-                )}
-                suffix="km"
-              />
-            </Col>
-            <Col span={8}>
-              <Statistic
-                title="Steps"
-                value={_.get(
-                  this.state.summaries,
-                  `[${this.state.currentSummary}].steps`,
-                  0
-                )}
-                suffix="steps"
-              />
-            </Col>
+                    )}
+                    suffix="km"
+                  />
+                </Col>
+                <Col span={8}>
+                  <Statistic
+                    title="Steps"
+                    value={_.get(
+                      this.state.summaries,
+                      `[${this.state.currentSummary}].steps`,
+                      0
+                    )}
+                    suffix="steps"
+                  />
+                </Col>
+              </div>
+            )}
           </Row>
           <Row style={{ padding: 24 }}>
-            <Col span={24} style={timelineStyle}>
-              <Timeline>
-                <Timeline.Item color="green">{`${moment(
-                  _.get(
-                    this.state.summaries,
-                    `[${this.state.currentSummary}].start_datetime`,
-                    ""
-                  )
-                ).format(
-                  "MMMM Do YYYY, h:mmA"
-                )}: Started activity`}</Timeline.Item>
-                {this.renderSegments(segments)}
-                <Timeline.Item color="red">{`${moment(
-                  _.get(
-                    this.state.summaries,
-                    `[${this.state.currentSummary}].end_datetime`,
-                    ""
-                  )
-                ).format(
-                  "MMMM Do YYYY, h:mmA"
-                )}: Completed activity`}</Timeline.Item>
-              </Timeline>
-            </Col>
-          </Row>
-          <Row style={{ mpadding: 24 }}>
-            <Col span={24}>
-              <Map segments={segments} />
-            </Col>
+            <Skeleton active loading={this.state.loading} />
+            {!this.state.loading && (
+              <div>
+                <Col span={24} style={timelineStyle}>
+                  <Timeline>
+                    <Timeline.Item color="green">{`${moment(
+                      _.get(
+                        this.state.summaries,
+                        `[${this.state.currentSummary}].start_datetime`,
+                        ""
+                      )
+                    ).format(
+                      "MMMM Do YYYY, h:mmA"
+                    )}: Started activity`}</Timeline.Item>
+                    {this.renderSegments(segments)}
+                    <Timeline.Item color="red">{`${moment(
+                      _.get(
+                        this.state.summaries,
+                        `[${this.state.currentSummary}].end_datetime`,
+                        ""
+                      )
+                    ).format(
+                      "MMMM Do YYYY, h:mmA"
+                    )}: Completed activity`}</Timeline.Item>
+                  </Timeline>
+                </Col>
+              </div>
+            )}
           </Row>
         </Content>
+        <Map segments={segments} />
       </Layout>
     );
   }

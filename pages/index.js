@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { notification, Skeleton } from "antd";
 import io from "socket.io-client";
 import _ from "lodash";
 import axios from "axios";
@@ -98,13 +98,13 @@ class Index extends React.Component {
 
   render() {
     return (
-      <div className="appWrapper">
-        <Map devices={this.state.devices} />
+      <div>
+        {!this.state.loading && <Map devices={this.state.devices} />}
         <DeviceSelection
           devices={this.state.devices}
           loading={this.state.loading}
         />
-        <p>AG</p>
+        <Skeleton active loading={this.state.loading} />
       </div>
     );
   }

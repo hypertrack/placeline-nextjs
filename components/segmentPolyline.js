@@ -19,9 +19,9 @@ class SegmentPolyline extends Component {
         path={path}
         geodesic={true}
         options={{
-          strokeColor: "#ffffff",
-          strokeOpacity: 0.8,
-          strokeWeight: 4
+          strokeColor: "#02CE5C",
+          strokeOpacity: 1,
+          strokeWeight: 6
         }}
       />
     );
