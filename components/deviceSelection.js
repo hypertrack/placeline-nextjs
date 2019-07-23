@@ -6,16 +6,14 @@ import Router from "next/router";
 
 class DeviceSelection extends React.Component {
   handleChange(value) {
-    Router.push(`/placeline?id=${value}`);
+    Router.push(
+      `/placeline?id=${value.key}&name=${encodeURIComponent(value.label)}`
+    );
   }
 
   render() {
     const StyledSelect = styled(Select)`
-      position: fixed;
-      width: 50%;
-      top: 5%;
-      left: 25%;
-      background-color: #fcfcfc;
+      width: 100%;
     `;
 
     const { Option } = Select;
@@ -54,6 +52,7 @@ class DeviceSelection extends React.Component {
 
     return (
       <StyledSelect
+        labelInValue
         size="large"
         placeholder="Select device to see placeline ..."
         optionLabelProp="label"

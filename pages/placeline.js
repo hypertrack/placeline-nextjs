@@ -6,7 +6,9 @@ import {
   Timeline,
   PageHeader,
   DatePicker,
-  Skeleton
+  Skeleton,
+  Collapse,
+  Icon
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -104,28 +106,43 @@ class Placeline extends React.Component {
   }
 
   render() {
-    const timelineStyle = {
-      margin: "50px 0 0 0"
-    };
-
     const { Header, Content } = Layout;
+    const { Panel } = Collapse;
     const { RangePicker } = DatePicker;
 
     const currentSummaries = this.selectSummaries();
 
-    console.log(currentSummaries);
+    const customPanelStyle = {
+      background: "#f0f2f5",
+      borderRadius: 0,
+      paddingTop: 25,
+      paddingBottom: 25,
+      margin: 0,
+      border: 0,
+      overflow: "hidden"
+    };
 
     return (
       <Layout>
         <Header>
           <PageHeader
             onBack={() => window.history.back()}
-            title="Placeline"
-            subTitle={`${this.props.query.id}`}
-            extra={
+            title="Overview"
+            subTitle={
+              this.props.query.name !== ""
+                ? this.props.query.name
+                : this.props.query.id
+            }
+          />
+        </Header>
+        <Content style={{ padding: "0 50px" }}>
+          <Row style={{ background: "#f0f2f5", padding: 25 }}>
+            <Col span={12} offset={6}>
               <RangePicker
+                size="large"
                 onChange={date => this.onDateChange(date)}
                 value={[this.state.startDate, this.state.endDate]}
+                style={{ width: "100%" }}
                 ranges={{
                   Today: [moment(), moment()],
                   "This Week": [
@@ -138,10 +155,8 @@ class Placeline extends React.Component {
                   ]
                 }}
               />
-            }
-          />
-        </Header>
-        <Content style={{ padding: "0 50px" }}>
+            </Col>
+          </Row>
           <Row style={{ background: "#fff", padding: 24 }}>
             <Skeleton active loading={this.state.loading} />
             {!this.state.loading && (
@@ -171,28 +186,32 @@ class Placeline extends React.Component {
               </div>
             )}
           </Row>
-          <Row style={{ padding: 24 }}>
-            <Skeleton active loading={this.state.loading} />
-            {!this.state.loading && (
-              <div>
-                <Col span={24} style={timelineStyle}>
-                  <Timeline>
-                    <Timeline.Item color="green">{`${moment(
-                      currentSummaries.start_datetime
-                    ).format(
-                      "MMMM Do YYYY, h:mmA"
-                    )}: Started activity`}</Timeline.Item>
-                    {this.renderSegments(currentSummaries.segments)}
-                    <Timeline.Item color="red">{`${moment(
-                      currentSummaries.end_datetime
-                    ).format(
-                      "MMMM Do YYYY, h:mmA"
-                    )}: Completed activity`}</Timeline.Item>
-                  </Timeline>
-                </Col>
-              </div>
-            )}
-          </Row>
+          <Skeleton active loading={this.state.loading} />
+          {!this.state.loading && (
+            <Collapse
+              bordered={false}
+              expandIcon={({ isActive }) => (
+                <Icon type="caret-right" rotate={isActive ? 90 : 0} />
+              )}
+              defaultActiveKey={["1"]}
+            >
+              <Panel header="Timeline" key="1" style={customPanelStyle}>
+                <Timeline>
+                  <Timeline.Item color="green">{`${moment(
+                    currentSummaries.start_datetime
+                  ).format(
+                    "MMMM Do YYYY, h:mmA"
+                  )}: Started activity`}</Timeline.Item>
+                  {this.renderSegments(currentSummaries.segments)}
+                  <Timeline.Item color="red">{`${moment(
+                    currentSummaries.end_datetime
+                  ).format(
+                    "MMMM Do YYYY, h:mmA"
+                  )}: Completed activity`}</Timeline.Item>
+                </Timeline>
+              </Panel>
+            </Collapse>
+          )}
         </Content>
         <Map segments={currentSummaries.segments} />
       </Layout>

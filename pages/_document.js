@@ -29,6 +29,12 @@ export default class MyDocument extends Document {
           <meta charSet="utf-8" />
           {this.props.styleTags}
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+          {/* Import CSS for nprogress */}
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/css/nprogress.css"
+          />
         </Head>
         <body>
           <Main />

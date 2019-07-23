@@ -7,7 +7,7 @@ const MAP_URL = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&v=3.exp&
 class Map extends Component {
   render() {
     const containerStyles = {
-      height: this.props.segments ? "50vh" : "100vh",
+      height: this.props.segments ? "75vh" : "calc(100vh - 64px)",
       width: "100%"
     };
 

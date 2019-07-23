@@ -1,10 +1,12 @@
-import { notification, Skeleton } from "antd";
+import { notification, Skeleton, Layout } from "antd";
 import io from "socket.io-client";
 import _ from "lodash";
 import axios from "axios";
 
 import DeviceSelection from "../components/deviceSelection";
 import Map from "../components/map";
+
+import { findDeviceById } from "../common/devices";
 
 class Index extends React.Component {
   constructor(props) {
@@ -21,24 +23,48 @@ class Index extends React.Component {
     this.subscribeToUdpates();
   }
 
+  updateDeviceLocation(i, location) {
+    let devices = this.state.devices;
+
+    // update device without new Devices API call
+    devices[i] = {
+      location: {
+        data: {
+          speed: location.data.speed,
+          altitude: location.data.altitude,
+          location_accuracy: location.data.location_accuracy,
+          bearing: location.data.bearing,
+          location: location.data.location
+        },
+        recorded_at: location.recorded_at
+      }
+    };
+
+    this.setState({
+      devices
+    });
+  }
+
   subscribeToUdpates() {
     this.socket = io(process.env.SERVER_URL);
 
     this.socket.on("location", location => {
-      console.log(location);
+      const { device, i } = findDeviceById(
+        this.state.devices,
+        location.device_id
+      );
+
+      const deviceName = device
+        ? _.get(device, "device_info.name", "")
+        : "unknown device";
+
       notification.success({
-        message: `Received new location update`,
-        description: `Device: ${location.device_id}`
+        message: `Received new location update for ${deviceName}`,
+        duration: 1,
+        placement: "bottomRight"
       });
 
-      let devices = this.state.devices;
-      devices[location.device_id] = {
-        location
-      };
-
-      this.setState({
-        devices
-      });
+      this.updateDeviceLocation(i, location);
     });
 
     this.socket.on("activity", activity => {
@@ -97,15 +123,19 @@ class Index extends React.Component {
   }
 
   render() {
+    const { Header } = Layout;
+
     return (
-      <div>
+      <Layout>
+        <Header>
+          <DeviceSelection
+            devices={this.state.devices}
+            loading={this.state.loading}
+          />
+          <Skeleton active loading={this.state.loading} />
+        </Header>
         {!this.state.loading && <Map devices={this.state.devices} />}
-        <DeviceSelection
-          devices={this.state.devices}
-          loading={this.state.loading}
-        />
-        <Skeleton active loading={this.state.loading} />
-      </div>
+      </Layout>
     );
   }
 }
