@@ -46,10 +46,15 @@ class Placeline extends React.Component {
         });
   }
 
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   renderSegments(segments) {
-    return segments.map((segment, i) => {
-      <Timeline.Item key={`segment-${i}`}>{`${segment.type} activity for ${moment.duration(segment.duration, 's').humanize()} (${segment.distance} km)`}</Timeline.Item>
-    });
+    console.log(segments);
+    return segments.map((segment, i) => (
+      <Timeline.Item key={`segment-${i}`}>{`${moment(segment.start_datetime).format("MMMM Do YYYY, h:mmA")} - ${moment(segment.end_datetime).format("MMMM Do YYYY, h:mmA")}: ${this.capitalizeFirstLetter(segment.type)} from ${segment.start_place} to ${segment.end_place} (${segment.distance/1000} km | ${segment.steps} steps | ${moment.duration(segment.duration, 's').humanize()})`}</Timeline.Item>
+    ));
   }
 
   render() {
@@ -65,8 +70,6 @@ class Placeline extends React.Component {
     const { RangePicker } = DatePicker;
 
     const segments = _.get(this.state.summaries, `[${this.state.currentSummary}].segments`, []);
-
-    console.log(this.state.summaries[this.state.currentSummary]);
 
     return (
       <Layout>
@@ -100,9 +103,9 @@ class Placeline extends React.Component {
           <Row style={{ padding: 24 }}>
             <Col span={24} style={timelineStyle}>
               <Timeline>
-                <Timeline.Item color="green">{`Started on ${moment(_.get(this.state.summaries, `[${this.state.currentSummary}].start_datetime`, '')).format("MMMM Do YYYY, h:mmA")}`}</Timeline.Item>
+                <Timeline.Item color="green">{`${moment(_.get(this.state.summaries, `[${this.state.currentSummary}].start_datetime`, '')).format("MMMM Do YYYY, h:mmA")}: Started activity`}</Timeline.Item>
                   {this.renderSegments(segments)}
-                <Timeline.Item color="red">{`Ended on ${moment(_.get(this.state.summaries, `[${this.state.currentSummary}].end_datetime`, '')).format("MMMM Do YYYY, h:mmA")}`}</Timeline.Item>
+                <Timeline.Item color="red">{`${moment(_.get(this.state.summaries, `[${this.state.currentSummary}].end_datetime`, '')).format("MMMM Do YYYY, h:mmA")}: Completed activity`}</Timeline.Item>
               </Timeline>
             </Col>
           </Row>

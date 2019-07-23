@@ -36,6 +36,12 @@ class Map extends React.Component {
             return (<Polyline
               path={path}
               key={`segment-${s}`}
+              geodesic={true}
+              options={{
+                strokeColor: "#ffffff",
+                strokeOpacity: 0.8,
+                strokeWeight: 4
+              }}
             />);
           });
         }

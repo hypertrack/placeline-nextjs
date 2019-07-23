@@ -26,7 +26,7 @@ class SummaryView extends React.Component {
                     <Statistic title="Duration" value={moment.duration(_.get(summary, 'duration', 0), 's').humanize()} />
                   </Col>
                   <Col span={6}>
-                    <Statistic title="Distance" value={_.get(summary, 'distance', 0)} suffix="km" />
+                    <Statistic title="Distance" value={_.get(summary, 'distance', 0)/1000} suffix="km" />
                   </Col>
                   <Col span={6}>
                     <Statistic title="Steps" value={_.get(summary, 'steps', 0)} suffix="steps" />
