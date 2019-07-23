@@ -51,7 +51,6 @@ class Placeline extends React.Component {
   }
 
   renderSegments(segments) {
-    console.log(segments);
     return segments.map((segment, i) => (
       <Timeline.Item key={`segment-${i}`}>{`${moment(segment.start_datetime).format("MMMM Do YYYY, h:mmA")} - ${moment(segment.end_datetime).format("MMMM Do YYYY, h:mmA")}: ${this.capitalizeFirstLetter(segment.type)} from ${segment.start_place} to ${segment.end_place} (${segment.distance/1000} km | ${segment.steps} steps | ${moment.duration(segment.duration, 's').humanize()})`}</Timeline.Item>
     ));
