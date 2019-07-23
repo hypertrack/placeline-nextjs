@@ -4,8 +4,13 @@
       [
         "import",
         {
-          "libraryName": "antd",
-          "style": false
+          "libraryName": "antd"
+        }
+      ],
+      [
+        "inline-import",
+        {
+          "extensions": [".css"]
         }
       ],
       [

@@ -13,8 +13,7 @@ class Map extends React.Component {
             options={{
               icon: {
                 url: '../static/map/live.svg',
-                scaledSize: { width: 32, height: 32 },
-                size: { width: 64, height: 64 }
+                scaledSize: { width: 32, height: 32 }
               }
             }}
             key={`label-${device.device_id}`}
@@ -51,11 +50,29 @@ class Map extends React.Component {
       }
     ));
 
+    let bounds = undefined;
+
+    if(typeof window !== 'undefined' && _.get(window, 'google.maps', false)) {
+      bounds = new window.google.maps.LatLngBounds();
+
+      if(this.props.devices) {
+        this.props.devices.map(device => {
+          const latLng = new window.google.maps.LatLng(
+            _.get(device,'location.data.location.coordinates[1]'),
+            _.get(device,'location.data.location.coordinates[0]'));
+          bounds.extend(latLng);
+          return latLng;
+      });
+      }
+    }
+
+
     return (<div>
       <MyMapComponent
+        ref={map => (typeof window !== 'undefined' && map && typeof map.fitBounds === 'function') && map.fitBounds(bounds)}
         googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GMAPS_KEY}&v=3.exp&libraries=geometry,drawing,places`}
         loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: this.props.segments ? `200px` :`100vh` }} />}
+        containerElement={<div style={{ height: this.props.segments ? `500px` :`100vh` }} />}
         mapElement={<div style={{ height: `100%` }} />}
       />
     </div>);

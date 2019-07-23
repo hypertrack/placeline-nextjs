@@ -11,7 +11,8 @@ class Index extends React.Component {
     super(props);
 
     this.state = {
-      devices: []
+      devices: [],
+      loading: true
     };
   }
 
@@ -90,39 +91,17 @@ class Index extends React.Component {
         }
 
         this.setState({
-          devices
-        }, () => {
-          // get last summaries
-          this.getSummaries();
+          devices,
+          loading: false
         });
       });
   }
 
-  getSummaries() {
-    // get last summaries for all devices from HyperTrack
-    this.state.devices.forEach((device, i) => {
-      const options = {
-        method: 'get',
-        url: `${process.env.SERVER_URL}/summaries/${device['device_id']}`
-      };
-
-      axios(options)
-        .then(resp => {
-          let {devices} = this.state;
-          devices[i].summaries = resp.data;
-
-          this.setState({
-            devices
-          });
-        });
-    });
-  }
-
   render() {
     return (
-      <div>
+      <div className="appWrapper">
         <Map devices={this.state.devices} />
-        <DeviceSelection devices={this.state.devices} />
+        <DeviceSelection devices={this.state.devices} loading={this.state.loading} />
       </div>
     );
   }
