@@ -72,6 +72,8 @@ class MapContainer extends Component {
                   _.get(device, "device_status", "") === "disconnected" ||
                   _.get(device, "device_status", "") === "inactive"
                 }
+                id={_.get(device, "device_id")}
+                name={_.get(device, "device_info.name")}
                 lat={_.get(device, "location.data.location.coordinates[1]")}
                 lng={_.get(device, "location.data.location.coordinates[0]")}
               />
