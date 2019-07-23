@@ -102,6 +102,7 @@ class Index extends React.Component {
       <div className="appWrapper">
         <Map devices={this.state.devices} />
         <DeviceSelection devices={this.state.devices} loading={this.state.loading} />
+        <p>AG</p>
       </div>
     );
   }
