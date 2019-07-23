@@ -68,12 +68,30 @@ class Placeline extends React.Component {
     let segments = [],
       duration = 0,
       distance = 0,
-      steps = 0;
+      steps = 0,
+      walk = 0,
+      drive = 0,
+      cycle = 0;
 
     for (let i = 0; i < this.state.summaries.length; i++) {
       const summary = this.state.summaries[i];
 
       if (moment(summary.start_datetime).isAfter(this.state.startDate, "day")) {
+        // get all walk, drive, cycle measurements
+        summary.segments.forEach(segment => {
+          if (segment.type === "cycle") {
+            cycle += segment.distance;
+          }
+
+          if (segment.type === "drive") {
+            drive += segment.distance;
+          }
+
+          if (segment.type === "walk") {
+            walk += segment.steps;
+          }
+        });
+
         segments = _.concat(segments, summary.segments);
         duration += summary.duration;
         distance += summary.distance;
@@ -87,7 +105,10 @@ class Placeline extends React.Component {
       distance,
       steps,
       start_datetime: this.state.startDate,
-      end_datetime: this.state.endDate
+      end_datetime: this.state.endDate,
+      walk,
+      cycle,
+      drive
     };
   }
 
@@ -166,35 +187,83 @@ class Placeline extends React.Component {
   }
 
   renderOverview(currentSummaries) {
+    const driveSvg = () => <SVG src={`../static/status/drive.svg`} />;
+    const cycleSvg = () => <SVG src={`../static/status/cycle.svg`} />;
+    const walkSvg = () => <SVG src={`../static/status/walk.svg`} />;
+
     return (
       <div>
-        <Skeleton active loading={this.state.loading} />
-        {!this.state.loading && (
-          <div>
-            <Col span={8}>
-              <Statistic
-                title="Duration"
-                value={moment
-                  .duration(currentSummaries.duration, "s")
-                  .humanize()}
-              />
-            </Col>
-            <Col span={8}>
-              <Statistic
-                title="Distance"
-                value={currentSummaries.distance}
-                suffix="m"
-              />
-            </Col>
-            <Col span={8}>
-              <Statistic
-                title="Steps"
-                value={currentSummaries.steps}
-                suffix="steps"
-              />
-            </Col>
-          </div>
-        )}
+        <Row style={{ background: "#fff", padding: 24 }}>
+          <Skeleton active loading={this.state.loading} />
+          {!this.state.loading && (
+            <div>
+              <Col span={8}>
+                <Statistic
+                  title="Duration"
+                  value={moment
+                    .duration(currentSummaries.duration, "s")
+                    .humanize()}
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic
+                  title="Distance"
+                  groupSeparator={" "}
+                  value={currentSummaries.distance}
+                  suffix="meters"
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic
+                  title="Steps"
+                  groupSeparator={" "}
+                  value={currentSummaries.steps}
+                  suffix="steps"
+                />
+              </Col>
+            </div>
+          )}
+        </Row>
+        <Row style={{ background: "#fff", padding: 24 }}>
+          <Skeleton active loading={this.state.loading} />
+          {!this.state.loading && (
+            <div>
+              <Col span={8}>
+                <Statistic
+                  prefix={
+                    <Icon component={driveSvg} style={{ fontSize: "16px" }} />
+                  }
+                  title="Drive"
+                  groupSeparator={" "}
+                  value={currentSummaries.drive}
+                  suffix="meters"
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic
+                  prefix={
+                    <Icon component={cycleSvg} style={{ fontSize: "16px" }} />
+                  }
+                  title="Cycle"
+                  groupSeparator={" "}
+                  value={currentSummaries.cycle}
+                  suffix="meters"
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic
+                  prefix={
+                    <Icon component={walkSvg} style={{ fontSize: "16px" }} />
+                  }
+                  title="Walk"
+                  groupSeparator={" "}
+                  value={currentSummaries.walk}
+                  suffix="steps"
+                />
+              </Col>
+            </div>
+          )}
+        </Row>
       </div>
     );
   }
@@ -240,9 +309,7 @@ class Placeline extends React.Component {
               />
             </Col>
           </Row>
-          <Row style={{ background: "#fff", padding: 24 }}>
-            {this.renderOverview(currentSummaries)}
-          </Row>
+          {this.renderOverview(currentSummaries)}
           {!this.state.loading && this.renderTimeline(currentSummaries)}
           <Map segments={currentSummaries.segments} />
         </Content>
