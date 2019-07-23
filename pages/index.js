@@ -1,10 +1,10 @@
-import { notification } from 'antd';
-import io from 'socket.io-client';
-import _ from 'lodash';
-import axios from 'axios';
+import { notification } from "antd";
+import io from "socket.io-client";
+import _ from "lodash";
+import axios from "axios";
 
-import DeviceSelection from '../components/deviceSelection';
-import Map from '../components/map';
+import DeviceSelection from "../components/deviceSelection";
+import Map from "../components/map";
 
 class Index extends React.Component {
   constructor(props) {
@@ -24,7 +24,7 @@ class Index extends React.Component {
   subscribeToUdpates() {
     this.socket = io(process.env.SERVER_URL);
 
-    this.socket.on('location', location => {
+    this.socket.on("location", location => {
       console.log(location);
       notification.success({
         message: `Received new location update`,
@@ -41,28 +41,28 @@ class Index extends React.Component {
       });
     });
 
-    this.socket.on('activity', activity => {
+    this.socket.on("activity", activity => {
       console.log(activity);
       this.setState({
         activity
       });
     });
 
-    this.socket.on('health', health => {
+    this.socket.on("health", health => {
       console.log(health);
       this.setState({
         health
       });
     });
 
-    this.socket.on('summary', summary => {
+    this.socket.on("summary", summary => {
       console.log(summary);
       this.setState({
         summary
       });
     });
 
-    this.socket.on('trip', trip => {
+    this.socket.on("trip", trip => {
       console.log(summary);
       this.setState({
         trip
@@ -73,35 +73,37 @@ class Index extends React.Component {
   getDeviceList() {
     // get all devices from HyperTrack
     const options = {
-      method: 'get',
+      method: "get",
       url: `${process.env.SERVER_URL}/devices`
     };
 
-    axios(options)
-      .then(resp => {
-        let devices = resp.data;
+    axios(options).then(resp => {
+      let devices = resp.data;
 
-        // update device_status
-        for (let i = 0; i < devices.length; i++) {
-          const device = devices[i];
+      // update device_status
+      for (let i = 0; i < devices.length; i++) {
+        const device = devices[i];
 
-          if (device.device_status === 'active') {
-            device.device_status = device.activity.data.value;
-          }
+        if (device.device_status === "active") {
+          device.device_status = device.activity.data.value;
         }
+      }
 
-        this.setState({
-          devices,
-          loading: false
-        });
+      this.setState({
+        devices,
+        loading: false
       });
+    });
   }
 
   render() {
     return (
       <div className="appWrapper">
         <Map devices={this.state.devices} />
-        <DeviceSelection devices={this.state.devices} loading={this.state.loading} />
+        <DeviceSelection
+          devices={this.state.devices}
+          loading={this.state.loading}
+        />
         <p>AG</p>
       </div>
     );
