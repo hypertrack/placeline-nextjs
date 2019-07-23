@@ -8,7 +8,8 @@ import {
   DatePicker,
   Skeleton,
   Collapse,
-  Icon
+  Icon,
+  BackTop
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -96,21 +97,31 @@ class Placeline extends React.Component {
         <SVG src={`../static/status/${segment.type}.svg`} />
       );
 
+      let description = "";
+      let overview = "";
+
+      if (segment.start_place && segment.end_place) {
+        description += `From ${segment.start_place} to ${segment.end_place}`;
+      }
+
+      if (segment.duration || segment.steps || segment.distance) {
+        console.log(segment.duration, segment.steps, segment.distance);
+        overview += `${segment.distance} m | ${
+          segment.steps
+        } steps | ${moment.duration(segment.duration, "s").humanize()}`;
+      }
+
       return (
         <Timeline.Item
           key={`segment-${i}`}
           dot={<Icon component={activitySvg} style={{ fontSize: "16px" }} />}
-        >{`${moment(segment.start_datetime).format(
-          "MMMM Do YYYY, h:mmA"
-        )} - ${moment(segment.end_datetime).format(
-          "MMMM Do YYYY, h:mmA"
-        )}: ${this.capitalizeFirstLetter(segment.type)} from ${
-          segment.start_place
-        } to ${segment.end_place} (${segment.distance0} m | ${
-          segment.steps
-        } steps | ${moment
-          .duration(segment.duration, "s")
-          .humanize()})`}</Timeline.Item>
+        >
+          <p style={{ color: "#c8dbbf" }}>
+            {moment(segment.start_datetime).format("MM/DD/YY h:mmA")}
+          </p>
+          <p style={{ color: "#4c9e26" }}>{description}</p>
+          <p>{overview}</p>
+        </Timeline.Item>
       );
     });
   }
@@ -119,10 +130,9 @@ class Placeline extends React.Component {
     const { Panel } = Collapse;
 
     const customPanelStyle = {
-      borderRadius: 0,
       paddingTop: 25,
       paddingBottom: 25,
-      margin: 0,
+      margin: 25,
       border: 0,
       overflow: "hidden"
     };
@@ -136,18 +146,20 @@ class Placeline extends React.Component {
         defaultActiveKey={["1"]}
       >
         <Panel header="Timeline" key="1" style={customPanelStyle}>
-          <Timeline>
+          <Timeline mode="alternate">
             <Timeline.Item
               dot={<Icon type="play-circle" style={{ fontSize: "16px" }} />}
-            >{`${moment(currentSummaries.start_datetime).format(
-              "MMMM Do YYYY, h:mmA"
-            )}: Started activity`}</Timeline.Item>
+              color="green"
+            >
+              {moment(currentSummaries.start_datetime).format("MM/DD/YY h:mmA")}
+            </Timeline.Item>
             {this.renderSegments(currentSummaries.segments)}
             <Timeline.Item
               dot={<Icon type="check-circle" style={{ fontSize: "16px" }} />}
-            >{`${moment(currentSummaries.end_datetime).format(
-              "MMMM Do YYYY, h:mmA"
-            )}: Completed activity`}</Timeline.Item>
+              color="green"
+            >
+              {moment(currentSummaries.end_datetime).format("MM/DD/YY h:mmA")}
+            </Timeline.Item>
           </Timeline>
         </Panel>
       </Collapse>
@@ -235,6 +247,7 @@ class Placeline extends React.Component {
           {!this.state.loading && this.renderTimeline(currentSummaries)}
           <Map segments={currentSummaries.segments} />
         </Content>
+        <BackTop />
       </Layout>
     );
   }
