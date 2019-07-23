@@ -28,6 +28,7 @@ class Index extends React.Component {
 
     // update device without new Devices API call
     devices[i] = {
+      ...devices[i],
       location: {
         data: {
           speed: location.data.speed,

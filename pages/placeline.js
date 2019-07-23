@@ -105,7 +105,6 @@ class Placeline extends React.Component {
       }
 
       if (segment.duration || segment.steps || segment.distance) {
-        console.log(segment.duration, segment.steps, segment.distance);
         overview += `${segment.distance} m | ${
           segment.steps
         } steps | ${moment.duration(segment.duration, "s").humanize()}`;
