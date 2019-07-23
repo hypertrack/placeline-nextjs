@@ -2,44 +2,71 @@ import React, { Fragment, Component } from "react";
 import { withGoogleMap, withScriptjs, GoogleMap } from "react-google-maps";
 
 import SegmentPolyline from "./segmentPolyline";
+import LocationMarker from "./locationMarker";
 
 class MapContainer extends Component {
-  render() {
-    if (_.get(this.props, "segments.length", 0) > 0) {
-      polyLines = this.props.segments.map((segment, s) => {
-        const polyline = segment.polyline;
-        let path = [];
+  componentDidUpdate() {
+    this.map.fitBounds(this.getBounds());
+  }
 
-        if (_.get(polyline, "length", 0) > 0) {
-          for (let i = 0; i < polyline.length; i++) {
-            const coordinates = polyline[i];
-            path.push({ lat: coordinates[0], lng: coordinates[1] });
-          }
-        }
+  componentDidMount() {
+    this.map.fitBounds(this.getBounds());
+  }
 
-        return (
-          <Polyline
-            path={path}
-            key={`segment-${s}`}
-            geodesic={true}
-            options={{
-              strokeColor: "#ffffff",
-              strokeOpacity: 0.8,
-              strokeWeight: 4
-            }}
-          />
+  getBounds() {
+    let bounds = new google.maps.LatLngBounds();
+
+    if (this.props.devices) {
+      this.props.devices.map(device => {
+        bounds.extend(
+          new google.maps.LatLng(
+            _.get(device, "location.data.location.coordinates[1]", 0),
+            _.get(device, "location.data.location.coordinates[0]", 0)
+          )
         );
       });
     }
 
+    if (this.props.segments) {
+      this.props.segments.map(segment => {
+        if (segment.polyline && segment.polyline.length > 0) {
+          for (let i = 0; i < segment.polyline.length; i++) {
+            bounds.extend(
+              new google.maps.LatLng(
+                segment.polyline[i][0],
+                segment.polyline[i][1]
+              )
+            );
+          }
+        }
+      });
+    }
+
+    return bounds;
+  }
+
+  render() {
     return (
       <GoogleMap
         ref={elem => (this.map = elem)}
-        zoom={12}
-        center={{ lat: 37.7933412, lng: -122.3995876 }}
+        zoom={15}
+        center={this.getBounds()}
         options={{ styles: require("../static/map/GoogleMapStyles.json") }}
       >
-        <Fragment />
+        <Fragment>
+          {this.props.segments &&
+            this.props.segments.map((segment, i) => (
+              <SegmentPolyline segment={segment} key={`segment-${i}`} />
+            ))}
+          {this.props.devices &&
+            this.props.devices.map((device, i) => (
+              <LocationMarker
+                key={`location-${i}`}
+                lat={_.get(device, "location.data.location.coordinates[1]")}
+                lng={_.get(device, "location.data.location.coordinates[0]")}
+              />
+            ))}
+        </Fragment>
       </GoogleMap>
     );
   }
