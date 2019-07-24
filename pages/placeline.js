@@ -19,6 +19,9 @@ import SVG from "react-inlinesvg";
 import Map from "../components/map";
 import SegmentPlaceline from "../components/segmentPlaceline";
 
+const CALENDAR_FORMAT = "MM/DD/YY h:mmA";
+const TIME_FORMAT = "h:mmA";
+
 class Placeline extends React.Component {
   constructor(props) {
     super(props);
@@ -27,8 +30,8 @@ class Placeline extends React.Component {
       summaries: [],
       currentSummaries: {},
       selectedSummaries: [],
-      startDate: moment(new Date()).add(-1, "days"),
-      endDate: moment(),
+      startDate: moment().startOf("day"),
+      endDate: moment().endOf("day"),
       loading: true
     };
   }
@@ -42,10 +45,13 @@ class Placeline extends React.Component {
   }
 
   onDateChange(date) {
-    this.setState({
-      startDate: date[0],
-      endDate: date[1]
-    });
+    this.setState(
+      {
+        startDate: date[0],
+        endDate: date[1]
+      },
+      () => this.selectSummaries()
+    );
   }
 
   getSummaries() {
@@ -81,7 +87,10 @@ class Placeline extends React.Component {
     for (let i = 0; i < this.state.summaries.length; i++) {
       const summary = this.state.summaries[i];
 
-      if (moment(summary.start_datetime).isAfter(this.state.startDate, "day")) {
+      if (
+        moment(summary.start_datetime).isAfter(this.state.startDate) &&
+        moment(summary.end_datetime).isBefore(this.state.endDate)
+      ) {
         // get all walk, drive, cycle measurements
         summary.segments.forEach(segment => {
           if (segment.type === "cycle") {
@@ -168,14 +177,14 @@ class Placeline extends React.Component {
               dot={<Icon type="play-circle" style={{ fontSize: "16px" }} />}
               color="green"
             >
-              {moment(currentSummaries.start_datetime).format("MM/DD/YY h:mmA")}
+              {moment(currentSummaries.start_datetime).format(CALENDAR_FORMAT)}
             </Timeline.Item>
             {this.renderSegments(currentSummaries.segments)}
             <Timeline.Item
               dot={<Icon type="check-circle" style={{ fontSize: "16px" }} />}
               color="green"
             >
-              {moment(currentSummaries.end_datetime).format("MM/DD/YY h:mmA")}
+              {moment(currentSummaries.end_datetime).format(CALENDAR_FORMAT)}
             </Timeline.Item>
           </Timeline>
         </Panel>
@@ -289,11 +298,13 @@ class Placeline extends React.Component {
             <Col span={12} offset={6}>
               <RangePicker
                 size="large"
+                showTime={{ format: TIME_FORMAT }}
+                format={CALENDAR_FORMAT}
                 onChange={date => this.onDateChange(date)}
                 value={[this.state.startDate, this.state.endDate]}
                 style={{ width: "100%" }}
                 ranges={{
-                  Today: [moment(), moment()],
+                  Today: [moment().startOf("day"), moment().endOf("day")],
                   "This Week": [
                     moment().startOf("week"),
                     moment().endOf("week")
