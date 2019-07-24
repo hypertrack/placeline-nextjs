@@ -46,6 +46,58 @@ class Index extends React.Component {
     });
   }
 
+  updateDeviceActivity(i, activity) {
+    let devices = this.state.devices;
+
+    // update device without new Devices API call
+    devices[i] = {
+      ...devices[i],
+      activity: {
+        data: {
+          value: activity.data.value,
+          location: activity.data.location
+        },
+        recorded_at: activity.recorded_at
+      }
+    };
+
+    this.setState({
+      devices
+    });
+  }
+
+  updateDeviceHealth(i, health) {
+    let devices = this.state.devices;
+
+    // update device without new Devices API call
+    devices[i] = {
+      ...devices[i],
+      device_health: {
+        data: {
+          value: health.data.value,
+          hint: health.data.hint
+        },
+        recorded_at: health.recorded_at
+      }
+    };
+
+    this.setState({
+      devices
+    });
+  }
+
+  showNotification(text, device) {
+    const deviceName = device
+      ? _.get(device, "device_info.name", "")
+      : "unknown device";
+
+    notification.success({
+      message: `${text} for ${deviceName}`,
+      duration: 2,
+      placement: "bottomRight"
+    });
+  }
+
   subscribeToUdpates() {
     this.socket = io(process.env.SERVER_URL);
 
@@ -55,31 +107,28 @@ class Index extends React.Component {
         location.device_id
       );
 
-      const deviceName = device
-        ? _.get(device, "device_info.name", "")
-        : "unknown device";
-
-      notification.success({
-        message: `Received new location update for ${deviceName}`,
-        duration: 1,
-        placement: "bottomRight"
-      });
-
+      this.showNotification("Updated location", device);
       this.updateDeviceLocation(i, location);
     });
 
     this.socket.on("activity", activity => {
-      console.log(activity);
-      this.setState({
-        activity
-      });
+      const { device, i } = findDeviceById(
+        this.state.devices,
+        activity.device_id
+      );
+
+      this.showNotification("Updated activity", device);
+      this.updateDeviceActivity(i, activity);
     });
 
     this.socket.on("health", health => {
-      console.log(health);
-      this.setState({
-        health
-      });
+      const { device, i } = findDeviceById(
+        this.state.devices,
+        health.device_id
+      );
+
+      this.showNotification("Updated health", device);
+      this.updateDeviceHealth(i, health);
     });
   }
 
