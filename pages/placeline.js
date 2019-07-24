@@ -17,6 +17,7 @@ import _ from "lodash";
 import SVG from "react-inlinesvg";
 
 import Map from "../components/map";
+import SegmentPlaceline from "../components/segmentPlaceline";
 
 class Placeline extends React.Component {
   constructor(props) {
@@ -24,6 +25,8 @@ class Placeline extends React.Component {
 
     this.state = {
       summaries: [],
+      currentSummaries: {},
+      selectedSummaries: [],
       startDate: moment(new Date()).add(-1, "days"),
       endDate: moment(),
       loading: true
@@ -53,10 +56,12 @@ class Placeline extends React.Component {
     };
 
     axios(options).then(resp => {
-      this.setState({
-        summaries: resp.data,
-        loading: false
-      });
+      this.setState(
+        {
+          summaries: resp.data
+        },
+        () => this.selectSummaries()
+      );
     });
   }
 
@@ -99,51 +104,43 @@ class Placeline extends React.Component {
       }
     }
 
-    return {
-      segments,
-      duration,
-      distance,
-      steps,
-      start_datetime: this.state.startDate,
-      end_datetime: this.state.endDate,
-      walk,
-      cycle,
-      drive
-    };
+    this.setState({
+      currentSummaries: {
+        segments,
+        duration,
+        distance,
+        steps,
+        start_datetime: this.state.startDate,
+        end_datetime: this.state.endDate,
+        walk,
+        cycle,
+        drive
+      },
+      selectedSummaries: new Array(segments.length).fill(false),
+      loading: false
+    });
+  }
+
+  onSegmentSelect(i) {
+    let currentSelected = this.state.selectedSummaries;
+
+    currentSelected[i] = !currentSelected[i];
+
+    this.setState({
+      selectSummaries: currentSelected
+    });
   }
 
   renderSegments(segments) {
-    return segments.map((segment, i) => {
-      const activitySvg = () => (
-        <SVG src={`../static/status/${segment.type}.svg`} />
-      );
-
-      let description = "";
-      let overview = "";
-
-      if (segment.start_place && segment.end_place) {
-        description += `From ${segment.start_place} to ${segment.end_place}`;
-      }
-
-      if (segment.duration || segment.steps || segment.distance) {
-        overview += `${segment.distance} m | ${
-          segment.steps
-        } steps | ${moment.duration(segment.duration, "s").humanize()}`;
-      }
-
-      return (
-        <Timeline.Item
-          key={`segment-${i}`}
-          dot={<Icon component={activitySvg} style={{ fontSize: "16px" }} />}
-        >
-          <p style={{ color: "#c8dbbf" }}>
-            {moment(segment.start_datetime).format("MM/DD/YY h:mmA")}
-          </p>
-          <p style={{ color: "#4c9e26" }}>{description}</p>
-          <p>{overview}</p>
-        </Timeline.Item>
-      );
-    });
+    return segments.map((segment, i) => (
+      <SegmentPlaceline
+        segment={segment}
+        selected={this.state.selectedSummaries[i]}
+        onSelection={() => this.onSegmentSelect(i)}
+        id={i}
+        key={i}
+      />
+    ));
   }
 
   renderTimeline(currentSummaries) {
@@ -272,7 +269,7 @@ class Placeline extends React.Component {
     const { Header, Content } = Layout;
     const { RangePicker } = DatePicker;
 
-    const currentSummaries = this.selectSummaries();
+    const currentSummaries = this.state.currentSummaries;
 
     return (
       <Layout>
@@ -311,7 +308,11 @@ class Placeline extends React.Component {
           </Row>
           {this.renderOverview(currentSummaries)}
           {!this.state.loading && this.renderTimeline(currentSummaries)}
-          <Map segments={currentSummaries.segments} />
+          <Map
+            segments={currentSummaries.segments}
+            selectedSegments={this.state.selectedSummaries}
+            onSelection={i => this.onSegmentSelect(i)}
+          />
         </Content>
         <BackTop />
       </Layout>

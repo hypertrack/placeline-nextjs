@@ -62,7 +62,12 @@ class MapContainer extends Component {
         <Fragment>
           {this.props.segments &&
             this.props.segments.map((segment, i) => (
-              <SegmentPolyline segment={segment} key={`segment-${i}`} />
+              <SegmentPolyline
+                segment={segment}
+                key={`segment-${i}`}
+                selected={this.props.selectedSegments[i]}
+                onSelection={() => this.props.onSelection(i)}
+              />
             ))}
           {this.props.devices &&
             this.props.devices.map((device, i) => (
