@@ -50,8 +50,13 @@ class Index extends React.Component {
     let devices = this.state.devices;
 
     // update device without new Devices API call
+    // includes device status update
     devices[i] = {
       ...devices[i],
+      device_status:
+        devices[i].device_status === "active"
+          ? activity.data.value
+          : devices[i].device_status,
       activity: {
         data: {
           value: activity.data.value,
