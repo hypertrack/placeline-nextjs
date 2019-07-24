@@ -81,20 +81,6 @@ class Index extends React.Component {
         health
       });
     });
-
-    this.socket.on("summary", summary => {
-      console.log(summary);
-      this.setState({
-        summary
-      });
-    });
-
-    this.socket.on("trip", trip => {
-      console.log(summary);
-      this.setState({
-        trip
-      });
-    });
   }
 
   getDeviceList() {
