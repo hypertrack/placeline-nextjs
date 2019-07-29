@@ -7,19 +7,17 @@ import {
   PageHeader,
   DatePicker,
   Skeleton,
-  Collapse,
   Icon,
   BackTop
 } from "antd";
 import axios from "axios";
 import moment from "moment";
 import _ from "lodash";
-import SVG from "react-inlinesvg";
 
 import Map from "../components/map";
 import SegmentPlaceline from "../components/segmentPlaceline";
 
-const CALENDAR_FORMAT = "MM/DD/YY h:mmA";
+const CALENDAR_FORMAT = "MM/DD/YY";
 const TIME_FORMAT = "h:mmA";
 
 class Placeline extends React.Component {
@@ -84,6 +82,9 @@ class Placeline extends React.Component {
       drive = 0,
       cycle = 0;
 
+    // do not render health segments, only activity events
+    const relevantSegments = ["run", "drive", "cycle", "stop", "walk"];
+
     for (let i = 0; i < this.state.summaries.length; i++) {
       const summary = this.state.summaries[i];
 
@@ -91,8 +92,8 @@ class Placeline extends React.Component {
         moment(summary.start_datetime).isAfter(this.state.startDate) &&
         moment(summary.end_datetime).isBefore(this.state.endDate)
       ) {
-        // get all walk, drive, cycle measurements
         summary.segments.forEach(segment => {
+          // get all walk, drive, cycle measurements
           if (segment.type === "cycle") {
             cycle += segment.distance;
           }
@@ -104,9 +105,19 @@ class Placeline extends React.Component {
           if (segment.type === "walk") {
             walk += segment.steps;
           }
+
+          if (relevantSegments.indexOf(segment.type) >= 0) {
+            // disregard sgements that are way to short to be relevant
+            if (
+              segment.distance > 5 ||
+              segment.steps > 10 ||
+              segment.duration > 60
+            ) {
+              segments.push(segment);
+            }
+          }
         });
 
-        segments = _.concat(segments, summary.segments);
         duration += summary.duration;
         distance += summary.distance;
         steps += summary.steps;
@@ -153,156 +164,127 @@ class Placeline extends React.Component {
   }
 
   renderTimeline(currentSummaries) {
-    const { Panel } = Collapse;
-
-    const customPanelStyle = {
-      paddingTop: 25,
-      paddingBottom: 25,
-      margin: 25,
-      border: 0,
-      overflow: "hidden"
-    };
-
     return (
-      <Collapse
-        bordered={false}
-        expandIcon={({ isActive }) => (
-          <Icon type="caret-right" rotate={isActive ? 90 : 0} />
-        )}
-        defaultActiveKey={["1"]}
-      >
-        <Panel header="Timeline" key="1" style={customPanelStyle}>
-          <Timeline mode="alternate">
-            <Timeline.Item
-              dot={<Icon type="play-circle" style={{ fontSize: "16px" }} />}
-              color="green"
-            >
-              {moment(currentSummaries.start_datetime).format(CALENDAR_FORMAT)}
-            </Timeline.Item>
-            {this.renderSegments(currentSummaries.segments)}
-            <Timeline.Item
-              dot={<Icon type="check-circle" style={{ fontSize: "16px" }} />}
-              color="green"
-            >
-              {moment(currentSummaries.end_datetime).format(CALENDAR_FORMAT)}
-            </Timeline.Item>
-          </Timeline>
-        </Panel>
-      </Collapse>
+      <Timeline style={{ padding: "50px" }}>
+        <Timeline.Item
+          dot={<Icon type="play-circle" style={{ fontSize: "16px" }} />}
+          color="green"
+        >
+          {moment(currentSummaries.start_datetime).format(CALENDAR_FORMAT)}
+        </Timeline.Item>
+        {this.renderSegments(currentSummaries.segments)}
+        <Timeline.Item
+          dot={<Icon type="check-circle" style={{ fontSize: "16px" }} />}
+          color="green"
+        >
+          {moment(currentSummaries.end_datetime).format(CALENDAR_FORMAT)}
+        </Timeline.Item>
+      </Timeline>
     );
   }
 
   renderOverview(currentSummaries) {
-    const driveSvg = () => <SVG src={`../static/status/drive.svg`} />;
-    const cycleSvg = () => <SVG src={`../static/status/cycle.svg`} />;
-    const walkSvg = () => <SVG src={`../static/status/walk.svg`} />;
-
     return (
-      <div>
-        <Row style={{ background: "#fff", padding: 24 }}>
+      <Row style={{ padding: "25px" }}>
+        <Col span={12}>
           <Skeleton active loading={this.state.loading} />
           {!this.state.loading && (
             <div>
-              <Col span={8}>
+              <Row>
                 <Statistic
                   title="Duration"
+                  style={{ padding: "10px" }}
                   value={moment
                     .duration(currentSummaries.duration, "s")
                     .humanize()}
                 />
-              </Col>
-              <Col span={8}>
+              </Row>
+              <Row>
                 <Statistic
                   title="Distance"
+                  style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={currentSummaries.distance}
                   suffix="meters"
                 />
-              </Col>
-              <Col span={8}>
+              </Row>
+              <Row>
                 <Statistic
                   title="Steps"
+                  style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={currentSummaries.steps}
                   suffix="steps"
                 />
-              </Col>
+              </Row>
             </div>
           )}
-        </Row>
-        <Row style={{ background: "#fff", padding: 24 }}>
+        </Col>
+        <Col span={12}>
           <Skeleton active loading={this.state.loading} />
           {!this.state.loading && (
             <div>
-              <Col span={8}>
+              <Row>
                 <Statistic
-                  prefix={
-                    <Icon component={driveSvg} style={{ fontSize: "16px" }} />
-                  }
                   title="Drive"
+                  style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={currentSummaries.drive}
                   suffix="meters"
                 />
-              </Col>
-              <Col span={8}>
+              </Row>
+              <Row>
                 <Statistic
-                  prefix={
-                    <Icon component={cycleSvg} style={{ fontSize: "16px" }} />
-                  }
                   title="Cycle"
+                  style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={currentSummaries.cycle}
                   suffix="meters"
                 />
-              </Col>
-              <Col span={8}>
+              </Row>
+              <Row>
                 <Statistic
-                  prefix={
-                    <Icon component={walkSvg} style={{ fontSize: "16px" }} />
-                  }
                   title="Walk"
+                  style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={currentSummaries.walk}
                   suffix="steps"
                 />
-              </Col>
+              </Row>
             </div>
           )}
-        </Row>
-      </div>
+        </Col>
+      </Row>
     );
   }
 
   render() {
-    const { Header, Content } = Layout;
+    const { Sider, Header, Content } = Layout;
     const { RangePicker } = DatePicker;
 
     const currentSummaries = this.state.currentSummaries;
 
     return (
       <Layout>
-        <Header>
-          <PageHeader
-            onBack={() => window.history.back()}
-            title="Overview"
-            subTitle={
-              this.props.query.name !== ""
-                ? this.props.query.name
-                : this.props.query.id
-            }
-          />
-        </Header>
-        <Content style={{ padding: "0 50px" }}>
-          <Row style={{ background: "#f0f2f5", padding: 25 }}>
-            <Col span={12} offset={6}>
+        <PageHeader
+          onBack={() => window.history.back()}
+          title="Overview"
+          style={{ backgroundColor: "#fff", height: "64px" }}
+          subTitle={
+            this.props.query.name !== ""
+              ? this.props.query.name
+              : this.props.query.id
+          }
+        />
+        <Layout>
+          <Sider width="25%" style={{ backgroundColor: "#fff" }}>
+            <Row style={{ background: "#F0F2F5", height: "64px" }}>
               <RangePicker
-                size="large"
                 showTime={{ format: TIME_FORMAT }}
                 format={CALENDAR_FORMAT}
                 onChange={date => this.onDateChange(date)}
                 value={[this.state.startDate, this.state.endDate]}
-                style={{ width: "100%" }}
+                style={{ width: "80%", marginLeft: "10%", padding: "10px" }}
                 ranges={{
                   Today: [moment().startOf("day"), moment().endOf("day")],
                   "This Week": [
@@ -315,17 +297,33 @@ class Placeline extends React.Component {
                   ]
                 }}
               />
-            </Col>
-          </Row>
-          {this.renderOverview(currentSummaries)}
-          {!this.state.loading && this.renderTimeline(currentSummaries)}
-          <Map
-            segments={currentSummaries.segments}
-            selectedSegments={this.state.selectedSummaries}
-            onSelection={i => this.onSegmentSelect(i)}
-          />
-        </Content>
-        <BackTop />
+            </Row>
+            <Row
+              style={{
+                height: "calc(50vh - 128px)"
+              }}
+            >
+              {this.renderOverview(currentSummaries)}
+            </Row>
+            <Row
+              style={{
+                height: "50vh",
+                overflow: "scroll",
+                overflowX: "hidden"
+              }}
+            >
+              {!this.state.loading && this.renderTimeline(currentSummaries)}
+            </Row>
+          </Sider>
+          <Content style={{ padding: "0" }}>
+            <Map
+              segments={currentSummaries.segments}
+              selectedSegments={this.state.selectedSummaries}
+              onSelection={i => this.onSegmentSelect(i)}
+            />
+          </Content>
+          <BackTop />
+        </Layout>
       </Layout>
     );
   }

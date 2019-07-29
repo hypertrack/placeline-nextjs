@@ -6,6 +6,7 @@ import moment from "moment";
 class SegmentPlaceline extends Component {
   render() {
     const { segment, id } = this.props;
+    const segmentsWithSteps = ["run", "stop", "walk"];
 
     const activitySvg = () => (
       <SVG src={`../static/status/${segment.type}.svg`} />
@@ -18,20 +19,20 @@ class SegmentPlaceline extends Component {
       description += `From ${segment.start_place} to ${segment.end_place}`;
     }
 
-    if (segment.duration || segment.steps || segment.distance) {
-      overview += `${segment.distance} m | ${
-        segment.steps
-      } steps | ${moment.duration(segment.duration, "s").humanize()}`;
+    if (segment.duration > 0 || segment.steps > 0 || segment.distance > 0) {
+      overview += `${segment.distance} m | `;
+
+      // only show steps for run, stop, and walk
+      if (segmentsWithSteps.indexOf(segment.type) >= 0) {
+        overview += `${segment.steps} steps | `;
+      }
+
+      overview += `${moment.duration(segment.duration, "s").humanize()}`;
     }
 
     return (
       <Timeline.Item
         key={`segment-${id}`}
-        className={
-          this.props.id % 2
-            ? "ant-timeline-item-left"
-            : "ant-timeline-item-right"
-        }
         style={{
           cursor: "pointer",
           borderRadius: "5px",
