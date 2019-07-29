@@ -7,8 +7,7 @@ import {
   PageHeader,
   DatePicker,
   Skeleton,
-  Icon,
-  BackTop
+  Icon
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -322,7 +321,6 @@ class Placeline extends React.Component {
               onSelection={i => this.onSegmentSelect(i)}
             />
           </Content>
-          <BackTop />
         </Layout>
       </Layout>
     );

@@ -83,7 +83,10 @@ class Index extends React.Component {
           hint: health.data.hint
         },
         recorded_at: health.recorded_at
-      }
+      },
+      device_status: health.data.value.includes("outage")
+        ? "disconnected"
+        : "active"
     };
 
     this.setState({
