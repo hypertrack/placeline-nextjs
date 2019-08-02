@@ -45,6 +45,25 @@ class MapContainer extends Component {
     return bounds;
   }
 
+  renderActivitySegments() {
+    const elems = [];
+
+    if (this.props.segments) {
+      this.props.segments.map((segment, i) => {
+        elems.push(
+          <SegmentPolyline
+            segment={segment}
+            key={`segment-${i}`}
+            selected={this.props.selectedSegments.includes(i)}
+            onSelection={() => this.props.onSelection(i)}
+          />
+        );
+      });
+    }
+
+    return elems;
+  }
+
   render() {
     return (
       <GoogleMap
@@ -60,15 +79,7 @@ class MapContainer extends Component {
         }}
       >
         <Fragment>
-          {this.props.segments &&
-            this.props.segments.map((segment, i) => (
-              <SegmentPolyline
-                segment={segment}
-                key={`segment-${i}`}
-                selected={this.props.selectedSegments.includes(i)}
-                onSelection={() => this.props.onSelection(i)}
-              />
-            ))}
+          {this.renderActivitySegments()}
           {this.props.devices &&
             this.props.devices.map((device, i) => (
               <LocationMarker

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Polyline } from "react-google-maps";
+import { Polyline, Marker } from "react-google-maps";
 import _ from "lodash";
 
 class SegmentPolyline extends Component {
@@ -15,16 +15,41 @@ class SegmentPolyline extends Component {
     }
 
     return (
-      <Polyline
-        path={path}
-        onClick={this.props.onSelection}
-        geodesic={true}
-        options={{
-          strokeColor: this.props.selected ? "#F7B501" : "#02CE5C",
-          strokeOpacity: this.props.selected ? 1 : 0.75,
-          strokeWeight: this.props.selected ? 6 : 3
-        }}
-      />
+      <div>
+        {polyline.length > 0 && (
+          <Marker
+            onClick={this.props.onSelection}
+            options={{
+              icon: {
+                url: `../static/status/${this.props.segment.type}.svg`,
+                scaledSize: { width: 16, height: 16 },
+                strokeColor: "red",
+                style: {
+                  backgroundColor: "#fff",
+                  boxShadow: "0 0 6px 0 rgba(0,0,0,.1)",
+                  height: "2rem",
+                  width: "2rem",
+                  borderRadius: "50%"
+                }
+              }
+            }}
+            position={{
+              lat: polyline[0][0],
+              lng: polyline[0][1]
+            }}
+          />
+        )}
+        <Polyline
+          path={path}
+          onClick={this.props.onSelection}
+          geodesic={true}
+          options={{
+            strokeColor: this.props.selected ? "#F7B501" : "#02CE5C",
+            strokeOpacity: this.props.selected ? 1 : 0.75,
+            strokeWeight: this.props.selected ? 6 : 3
+          }}
+        />
+      </div>
     );
   }
 }
