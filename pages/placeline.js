@@ -7,14 +7,19 @@ import {
   PageHeader,
   DatePicker,
   Skeleton,
-  Icon
+  Icon,
+  Button,
+  Badge
 } from "antd";
 import axios from "axios";
 import moment from "moment";
 import _ from "lodash";
+import styled from "styled-components";
 
 import Map from "../components/map";
 import SegmentPlaceline from "../components/segmentPlaceline";
+
+import { shortenLargeNumber } from "../common/helper";
 
 const CALENDAR_FORMAT = "MM/DD/YY";
 const TIME_FORMAT = "h:mmA";
@@ -26,7 +31,9 @@ class Placeline extends React.Component {
     this.state = {
       summaries: [],
       currentSummaries: {},
+      filteredSummaries: [],
       selectedSummaries: [],
+      addedSummaries: [],
       startDate: moment().startOf("day"),
       endDate: moment().endOf("day"),
       loading: true
@@ -135,18 +142,20 @@ class Placeline extends React.Component {
         cycle,
         drive
       },
-      selectedSummaries: new Array(segments.length).fill(false),
+      filteredSummaries: new Array(segments.length).fill(false),
       loading: false
     });
   }
 
   onSegmentSelect(i) {
-    let currentSelected = this.state.selectedSummaries;
-
-    currentSelected[i] = !currentSelected[i];
-
     this.setState({
-      selectSummaries: currentSelected
+      selectedSummaries: _.xor(this.state.selectedSummaries, [i])
+    });
+  }
+
+  onSegmentAdd(i) {
+    this.setState({
+      addedSummaries: _.xor(this.state.addedSummaries, [i])
     });
   }
 
@@ -154,7 +163,9 @@ class Placeline extends React.Component {
     return segments.map((segment, i) => (
       <SegmentPlaceline
         segment={segment}
-        selected={this.state.selectedSummaries[i]}
+        selected={this.state.selectedSummaries.includes(i)}
+        added={this.state.addedSummaries.includes(i)}
+        onAdd={() => this.onSegmentAdd(i)}
         onSelection={() => this.onSegmentSelect(i)}
         id={i}
         key={i}
@@ -163,28 +174,56 @@ class Placeline extends React.Component {
   }
 
   renderTimeline(currentSummaries) {
+    const StyledItem = styled(Timeline.Item)`
+      cursor: pointer;
+      background: ${this.props.selected ? "#E0F9EB" : "white"};
+
+      .ant-timeline-item-tail {
+        left: 29px;
+      }
+
+      .ant-timeline-item-head {
+        left: 30px;
+      }
+
+      .ant-timeline-item-head-custom {
+        background: transparent;
+      }
+
+      .ant-timeline-item-content {
+        margin: 0 0 0 43px;
+      }
+    `;
+
     return (
-      <Timeline style={{ padding: "50px" }}>
-        <Timeline.Item
+      <Timeline style={{ padding: "25px 0" }}>
+        <StyledItem
           dot={<Icon type="play-circle" style={{ fontSize: "16px" }} />}
           color="green"
         >
           {moment(currentSummaries.start_datetime).format(CALENDAR_FORMAT)}
-        </Timeline.Item>
+        </StyledItem>
         {this.renderSegments(currentSummaries.segments)}
-        <Timeline.Item
+        <StyledItem
           dot={<Icon type="check-circle" style={{ fontSize: "16px" }} />}
           color="green"
         >
           {moment(currentSummaries.end_datetime).format(CALENDAR_FORMAT)}
-        </Timeline.Item>
+        </StyledItem>
       </Timeline>
     );
   }
 
   renderOverview(currentSummaries) {
     return (
-      <Row style={{ padding: "25px" }}>
+      <Row
+        style={{
+          maxHeight: "calc(50vh - 128px)",
+          padding: "25px",
+          background: "#F0F2F5",
+          overflow: "scroll"
+        }}
+      >
         <Col span={12}>
           <Skeleton active loading={this.state.loading} />
           {!this.state.loading && (
@@ -203,8 +242,10 @@ class Placeline extends React.Component {
                   title="Distance"
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
-                  value={currentSummaries.distance}
-                  suffix="meters"
+                  value={
+                    shortenLargeNumber(currentSummaries.distance, 1).number
+                  }
+                  suffix={shortenLargeNumber(currentSummaries.distance, 1).unit}
                 />
               </Row>
               <Row>
@@ -212,8 +253,12 @@ class Placeline extends React.Component {
                   title="Steps"
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
-                  value={currentSummaries.steps}
-                  suffix="steps"
+                  value={
+                    shortenLargeNumber(currentSummaries.steps, 1, false).number
+                  }
+                  suffix={
+                    shortenLargeNumber(currentSummaries.steps, 1, false).unit
+                  }
                 />
               </Row>
             </div>
@@ -228,8 +273,8 @@ class Placeline extends React.Component {
                   title="Drive"
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
-                  value={currentSummaries.drive}
-                  suffix="meters"
+                  value={shortenLargeNumber(currentSummaries.drive, 1).number}
+                  suffix={shortenLargeNumber(currentSummaries.drive, 1).unit}
                 />
               </Row>
               <Row>
@@ -237,8 +282,8 @@ class Placeline extends React.Component {
                   title="Cycle"
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
-                  value={currentSummaries.cycle}
-                  suffix="meters"
+                  value={shortenLargeNumber(currentSummaries.cycle, 1).number}
+                  suffix={shortenLargeNumber(currentSummaries.cycle, 1).unit}
                 />
               </Row>
               <Row>
@@ -246,8 +291,12 @@ class Placeline extends React.Component {
                   title="Walk"
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
-                  value={currentSummaries.walk}
-                  suffix="steps"
+                  value={
+                    shortenLargeNumber(currentSummaries.walk, 1, false).number
+                  }
+                  suffix={
+                    shortenLargeNumber(currentSummaries.walk, 1, false).unit
+                  }
                 />
               </Row>
             </div>
@@ -265,63 +314,57 @@ class Placeline extends React.Component {
 
     return (
       <Layout>
-        <PageHeader
-          onBack={() => window.history.back()}
-          title="Overview"
-          style={{ backgroundColor: "#fff", height: "64px" }}
-          subTitle={
-            this.props.query.name !== ""
-              ? this.props.query.name
-              : this.props.query.id
-          }
-        />
-        <Layout>
-          <Sider width="25%" style={{ backgroundColor: "#fff" }}>
-            <Row style={{ background: "#F0F2F5", height: "64px" }}>
-              <RangePicker
-                showTime={{ format: TIME_FORMAT }}
-                format={CALENDAR_FORMAT}
-                onChange={date => this.onDateChange(date)}
-                value={[this.state.startDate, this.state.endDate]}
-                style={{ width: "80%", marginLeft: "10%", padding: "10px" }}
-                ranges={{
-                  Today: [moment().startOf("day"), moment().endOf("day")],
-                  "This Week": [
-                    moment().startOf("week"),
-                    moment().endOf("week")
-                  ],
-                  "This Month": [
-                    moment().startOf("month"),
-                    moment().endOf("month")
-                  ]
-                }}
-              />
-            </Row>
-            <Row
-              style={{
-                height: "calc(50vh - 128px)"
+        <Sider width="25%" style={{ backgroundColor: "#fff" }}>
+          <PageHeader
+            onBack={() => window.history.back()}
+            title="Overview"
+            style={{ backgroundColor: "#fff", height: "64px" }}
+            subTitle={
+              this.props.query.name !== ""
+                ? this.props.query.name
+                : this.props.query.id
+            }
+            extra={
+              <Badge count={this.state.addedSummaries.length}>
+                <Button type="primary" shape="circle" icon="upload" />
+              </Badge>
+            }
+          />
+          <Row style={{ background: "#FFF", height: "64px" }}>
+            <RangePicker
+              showTime={{ format: TIME_FORMAT }}
+              format={CALENDAR_FORMAT}
+              onChange={date => this.onDateChange(date)}
+              value={[this.state.startDate, this.state.endDate]}
+              style={{ width: "80%", marginLeft: "10%", padding: "16px" }}
+              ranges={{
+                Today: [moment().startOf("day"), moment().endOf("day")],
+                "This Week": [moment().startOf("week"), moment().endOf("week")],
+                "This Month": [
+                  moment().startOf("month"),
+                  moment().endOf("month")
+                ]
               }}
-            >
-              {this.renderOverview(currentSummaries)}
-            </Row>
-            <Row
-              style={{
-                height: "50vh",
-                overflow: "scroll",
-                overflowX: "hidden"
-              }}
-            >
-              {!this.state.loading && this.renderTimeline(currentSummaries)}
-            </Row>
-          </Sider>
-          <Content style={{ padding: "0" }}>
-            <Map
-              segments={currentSummaries.segments}
-              selectedSegments={this.state.selectedSummaries}
-              onSelection={i => this.onSegmentSelect(i)}
             />
-          </Content>
-        </Layout>
+          </Row>
+          {this.renderOverview(currentSummaries)}
+          <Row
+            style={{
+              height: "50vh",
+              overflow: "scroll",
+              overflowX: "hidden"
+            }}
+          >
+            {!this.state.loading && this.renderTimeline(currentSummaries)}
+          </Row>
+        </Sider>
+        <Content style={{ padding: "0" }}>
+          <Map
+            segments={currentSummaries.segments}
+            selectedSegments={this.state.selectedSummaries}
+            onSelection={i => this.onSegmentSelect(i)}
+          />
+        </Content>
       </Layout>
     );
   }

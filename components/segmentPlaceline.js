@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import SVG from "react-inlinesvg";
-import { Timeline, Icon } from "antd";
+import { Timeline, Icon, Row, Col } from "antd";
 import moment from "moment";
+import styled from "styled-components";
 
 class SegmentPlaceline extends Component {
   render() {
@@ -30,25 +31,55 @@ class SegmentPlaceline extends Component {
       overview += `${moment.duration(segment.duration, "s").humanize()}`;
     }
 
+    const StyledItem = styled(Timeline.Item)`
+      cursor: pointer;
+      background: ${this.props.selected ? "#fff9e8" : "white"};
+      padding: 0 15px;
+
+      .ant-timeline-item-tail {
+        left: 29px;
+        top: 0;
+        height: 100%;
+      }
+
+      .ant-timeline-item-head {
+        left: 30px;
+      }
+
+      .ant-timeline-item-head-custom {
+        background: transparent;
+      }
+
+      .ant-timeline-item-head-custom {
+        top: 45%;
+      }
+    `;
+
     return (
-      <Timeline.Item
+      <StyledItem
         key={`segment-${id}`}
-        style={{
-          cursor: "pointer",
-          borderRadius: "5px",
-          background: this.props.selected
-            ? "linear-gradient(to bottom, rgba(240,227,50,0) 20%,rgba(240,227,50,0) 25%,rgba(240,227,50,1) 26%,rgba(240,227,50,1) 74%,rgba(240,227,50,0) 75%,rgba(240,227,50,0) 80%)"
-            : "white"
-        }}
-        onClick={this.props.onSelection}
         dot={<Icon component={activitySvg} style={{ fontSize: "16px" }} />}
       >
-        <p style={{ color: "#c8dbbf" }}>
-          {moment(segment.start_datetime).format("MM/DD/YY h:mmA")}
-        </p>
-        <p style={{ color: "#4c9e26" }}>{description}</p>
-        <p>{overview}</p>
-      </Timeline.Item>
+        <Row type="flex" justify="space-around" align="middle" gutter={8}>
+          <Col offset={4} span={16} onClick={this.props.onSelection}>
+            <p style={{ color: "#D3D3D3", marginTop: "15px" }}>
+              {moment(segment.start_datetime).format("MM/DD/YY h:mmA")}
+            </p>
+            <p style={{ color: "#737373" }}>{description}</p>
+            <p style={{ marginBottom: "15px" }}>{overview}</p>
+          </Col>
+          <Col span={4}>
+            <Icon
+              onClick={this.props.onAdd}
+              style={{
+                fontSize: "16pt",
+                color: this.props.added ? "#03CE5C" : "#1890FF"
+              }}
+              type={this.props.added ? "check" : "plus"}
+            />
+          </Col>
+        </Row>
+      </StyledItem>
     );
   }
 }

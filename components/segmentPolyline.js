@@ -20,7 +20,7 @@ class SegmentPolyline extends Component {
         onClick={this.props.onSelection}
         geodesic={true}
         options={{
-          strokeColor: this.props.selected ? "#f0e332" : "#02CE5C",
+          strokeColor: this.props.selected ? "#F7B501" : "#02CE5C",
           strokeOpacity: this.props.selected ? 1 : 0.75,
           strokeWeight: this.props.selected ? 6 : 3
         }}
