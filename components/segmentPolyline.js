@@ -1,5 +1,8 @@
 import React, { Component } from "react";
-import { Polyline, Marker } from "react-google-maps";
+import { Polyline } from "react-google-maps";
+const {
+  MarkerWithLabel
+} = require("react-google-maps/lib/components/addons/MarkerWithLabel");
 import _ from "lodash";
 
 class SegmentPolyline extends Component {
@@ -17,19 +20,22 @@ class SegmentPolyline extends Component {
     return (
       <div>
         {polyline.length > 0 && (
-          <Marker
+          <MarkerWithLabel
             onClick={this.props.onSelection}
+            labelAnchor={{ x: 11, y: 18 }}
+            labelStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
+              height: "22px",
+              width: "22px",
+              borderRadius: "50%",
+              zIndex: "-100"
+            }}
             options={{
               icon: {
                 url: `../static/status/${this.props.segment.type}.svg`,
                 scaledSize: { width: 16, height: 16 },
-                strokeColor: "red",
                 style: {
-                  backgroundColor: "#fff",
-                  boxShadow: "0 0 6px 0 rgba(0,0,0,.1)",
-                  height: "2rem",
-                  width: "2rem",
-                  borderRadius: "50%"
+                  zIndex: "100"
                 }
               }
             }}
@@ -37,7 +43,9 @@ class SegmentPolyline extends Component {
               lat: polyline[0][0],
               lng: polyline[0][1]
             }}
-          />
+          >
+            <div />
+          </MarkerWithLabel>
         )}
         <Polyline
           path={path}
