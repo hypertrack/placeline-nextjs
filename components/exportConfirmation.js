@@ -1,5 +1,7 @@
-import { Modal, Button, Badge, Form } from "antd";
+import { Button, Badge } from "antd";
 import _ from "lodash";
+
+import ExportForm from "./exportForm";
 
 class ExportConfirmation extends React.Component {
   constructor(props) {
@@ -10,6 +12,10 @@ class ExportConfirmation extends React.Component {
       loading: false
     };
   }
+
+  saveFormRef = formRef => {
+    this.formRef = formRef;
+  };
 
   showModal = () => {
     this.setState({ visible: true });
@@ -27,8 +33,6 @@ class ExportConfirmation extends React.Component {
   };
 
   render() {
-    const { getFieldDecorator } = form;
-
     return (
       <div>
         <Badge count={this.props.count}>
@@ -37,47 +41,16 @@ class ExportConfirmation extends React.Component {
             type="primary"
             shape="circle"
             icon="upload"
+            disabled={this.props.count < 1 || this.state.loading}
           />
         </Badge>
-        <Modal
+        <ExportForm
+          wrappedComponentRef={this.saveFormRef}
           visible={this.state.visible}
-          title="Submit Expenses"
-          centered
-          onOk={this.handleOk}
+          loading={this.state.loading}
           onCancel={this.handleCancel}
-          footer={[
-            <Button key="back" onClick={this.handleCancel}>
-              Close
-            </Button>,
-            <Button
-              key="submit"
-              htmlType="submit"
-              type="primary"
-              loading={this.state.loading}
-              onClick={this.handleOk}
-            >
-              Submit
-            </Button>
-          ]}
-        >
-          <Form layout="vertical">
-            <Form.Item label="Distance">
-              {getFieldDecorator("distance", {
-                rules: [
-                  {
-                    required: true,
-                    message: "A distance is required"
-                  }
-                ]
-              })(<Input />)}
-            </Form.Item>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-          </Form>
-        </Modal>
+          onOk={this.handleOk}
+        />
       </div>
     );
   }

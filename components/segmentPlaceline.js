@@ -69,14 +69,16 @@ class SegmentPlaceline extends Component {
             <p style={{ marginBottom: "15px" }}>{overview}</p>
           </Col>
           <Col span={4}>
-            <Icon
-              onClick={this.props.onAdd}
-              style={{
-                fontSize: "16pt",
-                color: this.props.added ? "#03CE5C" : "#1890FF"
-              }}
-              type={this.props.added ? "check" : "plus"}
-            />
+            {segment.type === "drive" && (
+              <Icon
+                onClick={this.props.onAdd}
+                style={{
+                  fontSize: "16pt",
+                  color: this.props.added ? "#03CE5C" : "#1890FF"
+                }}
+                type={this.props.added ? "check" : "plus"}
+              />
+            )}
           </Col>
         </Row>
       </StyledItem>
