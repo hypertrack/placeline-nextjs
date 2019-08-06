@@ -7,7 +7,8 @@ import {
   PageHeader,
   DatePicker,
   Skeleton,
-  Icon
+  Icon,
+  notification
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -155,6 +156,19 @@ class Placeline extends React.Component {
   onSegmentAdd(i) {
     this.setState({
       addedSegments: _.xor(this.state.addedSegments, [i])
+    });
+  }
+
+  onExpenseSubmitted(expense) {
+    notification["success"]({
+      message: "Report sent",
+      description: `Expense report for $${expense.amount} (${
+        expense.distance
+      } km) on ${moment(expense.date).format("ll")} was submitted successfully`
+    });
+
+    this.setState({
+      addedSegments: []
     });
   }
 
@@ -329,6 +343,7 @@ class Placeline extends React.Component {
                 segments={this.state.addedSegments.map(
                   i => this.state.currentSummaries.segments[i]
                 )}
+                onSubmitSuccess={expense => this.onExpenseSubmitted(expense)}
               />
             }
           />

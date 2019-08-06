@@ -51,6 +51,7 @@ class ExportConfirmation extends React.Component {
           onCancel={this.handleCancel}
           onOk={this.handleOk}
           segments={this.props.segments}
+          onSubmitSuccess={this.props.onSubmitSuccess}
         />
       </div>
     );

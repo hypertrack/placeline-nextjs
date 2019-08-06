@@ -7,13 +7,69 @@ import {
   Select,
   DatePicker,
   Row,
-  Col
+  Col,
+  Checkbox
 } from "antd";
+import moment from "moment";
 
 import Map from "./map";
 
 const ExportForm = Form.create({ name: "form_in_modal" })(
   class extends React.Component {
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        distance: 0,
+        rate: 5.8,
+        amount: 0,
+        date: undefined,
+        description: ""
+      };
+    }
+
+    componentWillReceiveProps() {
+      let distance = 0,
+        rate = 5.8,
+        amount = 0,
+        date = undefined,
+        description = "";
+
+      if (this.props.segments) {
+        for (let i = 0; i < this.props.segments.length; i++) {
+          const segment = this.props.segments[i];
+
+          // sum of distance
+          distance += segment.distance;
+
+          if (i === 0) {
+            // set starting address in description
+            description = `Drive from ${segment.start_place} to `;
+
+            // set starting date as date
+            date = moment(segment.start_datetime);
+          }
+
+          if (i === this.props.segments.length - 1) {
+            // set end address in description
+            description += `${segment.end_place}`;
+          }
+        }
+      }
+
+      // convert meters to kilometers
+      distance = (distance / 1000).toFixed(2);
+      amount = (distance * rate).toFixed(2);
+
+      this.setState({
+        distance,
+        rate,
+        amount,
+        date,
+        description
+      });
+    }
+
     render() {
       const { visible, onCancel, onOk, form, loading } = this.props;
       const { getFieldDecorator } = form;
@@ -26,6 +82,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
           okText="Submit"
           onCancel={onCancel}
           onOk={onOk}
+          afterClose={() => this.props.onSubmitSuccess(this.state)}
           width="75%"
           footer={[
             ,
@@ -44,19 +101,19 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
             <Col span={10}>
               <Form layout="vertical">
                 <Row gutter={8}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item label="Distance">
-                      {getFieldDecorator("input-number", { initialValue: 1 })(
-                        <InputNumber min={1} max={9999} />
-                      )}
-                      <span className="ant-form-text"> miles</span>
+                      {getFieldDecorator("input-number", {
+                        initialValue: this.state.distance
+                      })(<InputNumber min={1} max={9999} />)}
+                      <span className="ant-form-text"> kilometers</span>
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item label="Amount">
-                      {getFieldDecorator("input-number", { initialValue: 1 })(
-                        <InputNumber min={1} max={9999} />
-                      )}
+                      {getFieldDecorator("input-number", {
+                        initialValue: this.state.amount
+                      })(<InputNumber min={1} max={9999} />)}
                       <span className="ant-form-text"> $</span>
                     </Form.Item>
                   </Col>
@@ -64,11 +121,11 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
                 <Form.Item label="Rate" hasFeedback>
                   <Select defaultValue="1">
                     <Option value="1">Default ($5.80/mile)</Option>
-                    <Option value="2">Long-range ($4.50/mile)</Option>
                   </Select>
                 </Form.Item>
                 <Form.Item label="Date">
                   {getFieldDecorator("date-picker", {
+                    initialValue: this.state.date,
                     rules: [
                       {
                         type: "object",
@@ -78,14 +135,18 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
                     ]
                   })(<DatePicker />)}
                 </Form.Item>
-
                 <Form.Item label="Description">
-                  {getFieldDecorator("description")(<Input type="textarea" />)}
+                  {getFieldDecorator("description", {
+                    initialValue: this.state.description
+                  })(<Input type="textarea" />)}
+                </Form.Item>
+                <Form.Item>
+                  <Checkbox checked={true}>Reimbursable</Checkbox>
                 </Form.Item>
               </Form>
             </Col>
             <Col offset={4} span={10}>
-              <Map segments={this.props.segments} height="400px" />
+              <Map segments={this.props.segments} height="450px" />
             </Col>
           </Row>
         </Modal>
