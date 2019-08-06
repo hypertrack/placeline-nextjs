@@ -7,9 +7,7 @@ import {
   PageHeader,
   DatePicker,
   Skeleton,
-  Icon,
-  Button,
-  Badge
+  Icon
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -18,6 +16,7 @@ import styled from "styled-components";
 
 import Map from "../components/map";
 import SegmentPlaceline from "../components/segmentPlaceline";
+import ExportConfirmation from "../components/exportConfirmation";
 
 import { shortenLargeNumber } from "../common/helper";
 
@@ -325,9 +324,7 @@ class Placeline extends React.Component {
                 : this.props.query.id
             }
             extra={
-              <Badge count={this.state.addedSummaries.length}>
-                <Button type="primary" shape="circle" icon="upload" />
-              </Badge>
+              <ExportConfirmation count={this.state.addedSummaries.length} />
             }
           />
           <Row style={{ background: "#FFF", height: "64px" }}>
