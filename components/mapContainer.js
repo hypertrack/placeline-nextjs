@@ -54,7 +54,11 @@ class MapContainer extends Component {
           <SegmentPolyline
             segment={segment}
             key={`segment-${i}`}
-            selected={this.props.selectedSegments.includes(i)}
+            selected={
+              this.props.selectedSegments
+                ? this.props.selectedSegments.includes(i)
+                : false
+            }
             onSelection={() => this.props.onSelection(i)}
           />
         );

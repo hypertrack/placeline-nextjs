@@ -17,6 +17,8 @@ class SegmentPolyline extends Component {
       }
     }
 
+    console.log(this.props);
+
     return (
       <div>
         {polyline.length > 0 && (

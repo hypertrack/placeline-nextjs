@@ -32,7 +32,7 @@ class Placeline extends React.Component {
       currentSummaries: {},
       filteredSummaries: [],
       selectedSummaries: [],
-      addedSummaries: [],
+      addedSegments: [],
       startDate: moment().startOf("day"),
       endDate: moment().endOf("day"),
       loading: true
@@ -154,7 +154,7 @@ class Placeline extends React.Component {
 
   onSegmentAdd(i) {
     this.setState({
-      addedSummaries: _.xor(this.state.addedSummaries, [i])
+      addedSegments: _.xor(this.state.addedSegments, [i])
     });
   }
 
@@ -163,7 +163,7 @@ class Placeline extends React.Component {
       <SegmentPlaceline
         segment={segment}
         selected={this.state.selectedSummaries.includes(i)}
-        added={this.state.addedSummaries.includes(i)}
+        added={this.state.addedSegments.includes(i)}
         onAdd={() => this.onSegmentAdd(i)}
         onSelection={() => this.onSegmentSelect(i)}
         id={i}
@@ -306,7 +306,7 @@ class Placeline extends React.Component {
   }
 
   render() {
-    const { Sider, Header, Content } = Layout;
+    const { Sider, Content } = Layout;
     const { RangePicker } = DatePicker;
 
     const currentSummaries = this.state.currentSummaries;
@@ -324,13 +324,21 @@ class Placeline extends React.Component {
                 : this.props.query.id
             }
             extra={
-              <ExportConfirmation count={this.state.addedSummaries.length} />
+              <ExportConfirmation
+                count={this.state.addedSegments.length}
+                segments={this.state.addedSegments.map(
+                  i => this.state.currentSummaries.segments[i]
+                )}
+              />
             }
           />
           <Row style={{ background: "#FFF", height: "64px" }}>
             <RangePicker
               showTime={{ format: TIME_FORMAT }}
               format={CALENDAR_FORMAT}
+              allowClear={false}
+              autoFocus={true}
+              diabled={this.state.loading}
               onChange={date => this.onDateChange(date)}
               value={[this.state.startDate, this.state.endDate]}
               style={{ width: "80%", marginLeft: "10%", padding: "16px" }}

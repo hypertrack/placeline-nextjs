@@ -7,9 +7,10 @@ import {
   Select,
   DatePicker,
   Row,
-  Col,
-  Layout
+  Col
 } from "antd";
+
+import Map from "./map";
 
 const ExportForm = Form.create({ name: "form_in_modal" })(
   class extends React.Component {
@@ -40,7 +41,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
           ]}
         >
           <Row gutter={8}>
-            <Col span={12}>
+            <Col span={10}>
               <Form layout="vertical">
                 <Row gutter={8}>
                   <Col span={12}>
@@ -83,8 +84,8 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
                 </Form.Item>
               </Form>
             </Col>
-            <Col span={12}>
-              <div>TODO: Map</div>
+            <Col offset={4} span={10}>
+              <Map segments={this.props.segments} height="400px" />
             </Col>
           </Row>
         </Modal>

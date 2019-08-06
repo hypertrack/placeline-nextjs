@@ -50,6 +50,7 @@ class ExportConfirmation extends React.Component {
           loading={this.state.loading}
           onCancel={this.handleCancel}
           onOk={this.handleOk}
+          segments={this.props.segments}
         />
       </div>
     );
