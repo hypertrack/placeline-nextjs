@@ -20,8 +20,8 @@ class MapContainer extends Component {
       this.props.devices.map(device => {
         bounds.extend(
           new google.maps.LatLng(
-            _.get(device, "location.data.location.coordinates[1]", 0),
-            _.get(device, "location.data.location.coordinates[0]", 0)
+            _.get(device, "location.geometry.coordinates[1]", 0),
+            _.get(device, "location.geometry.coordinates[0]", 0)
           )
         );
       });
@@ -89,13 +89,13 @@ class MapContainer extends Component {
               <LocationMarker
                 key={`location-${i}`}
                 offline={
-                  _.get(device, "device_status", "") === "disconnected" ||
-                  _.get(device, "device_status", "") === "inactive"
+                  _.get(device, "device_status.value", "") === "disconnected" ||
+                  _.get(device, "device_status.value", "") === "inactive"
                 }
                 id={_.get(device, "device_id")}
                 name={_.get(device, "device_info.name")}
-                lat={_.get(device, "location.data.location.coordinates[1]")}
-                lng={_.get(device, "location.data.location.coordinates[0]")}
+                lat={_.get(device, "location.geometry.coordinates[1]")}
+                lng={_.get(device, "location.geometry.coordinates[0]")}
               />
             ))}
         </Fragment>
