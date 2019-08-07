@@ -46,23 +46,19 @@ class Index extends React.Component {
     });
   }
 
-  updateDeviceActivity(i, activity) {
+  updateDeviceStatus(i, deviceStatus) {
     let devices = this.state.devices;
 
     // update device without new Devices API call
-    // includes device status update
     devices[i] = {
       ...devices[i],
-      device_status:
-        devices[i].device_status === "active"
-          ? activity.data.value
-          : devices[i].device_status,
-      activity: {
+      device_status: {
         data: {
-          value: activity.data.value,
-          location: activity.data.location
+          recorded_at: deviceStatus.recorded_at,
+          activity: deviceStatus.data.activity,
+          reason: deviceStatus.data.reason
         },
-        recorded_at: activity.recorded_at
+        value: deviceStatus.data.value
       }
     };
 
@@ -71,22 +67,13 @@ class Index extends React.Component {
     });
   }
 
-  updateDeviceHealth(i, health) {
+  updateDeviceBattery(i, battery) {
     let devices = this.state.devices;
 
     // update device without new Devices API call
     devices[i] = {
       ...devices[i],
-      device_health: {
-        data: {
-          value: health.data.value,
-          hint: health.data.hint
-        },
-        recorded_at: health.recorded_at
-      },
-      device_status: health.data.value.includes("outage")
-        ? "disconnected"
-        : "active"
+      battery: battery.data.value
     };
 
     this.setState({
@@ -97,7 +84,7 @@ class Index extends React.Component {
   showNotification(text, device) {
     const deviceName = device
       ? _.get(device, "device_info.name", "")
-      : "unknown device";
+      : "unnamed device";
 
     notification.success({
       message: `${text} for ${deviceName}`,
@@ -119,29 +106,29 @@ class Index extends React.Component {
       this.updateDeviceLocation(i, location);
     });
 
-    this.socket.on("activity", activity => {
+    this.socket.on("device_status", deviceStatus => {
       const { device, i } = findDeviceById(
         this.state.devices,
-        activity.device_id
+        deviceStatus.device_id
       );
 
-      this.showNotification("Updated activity", device);
-      this.updateDeviceActivity(i, activity);
+      this.showNotification("Updated device status", device);
+      this.updateDeviceStatus(i, deviceStatus);
     });
 
-    this.socket.on("health", health => {
+    this.socket.on("battery", battery => {
       const { device, i } = findDeviceById(
         this.state.devices,
-        health.device_id
+        battery.device_id
       );
 
-      this.showNotification("Updated health", device);
-      this.updateDeviceHealth(i, health);
+      this.showNotification("Updated battery status", device);
+      this.updateDeviceBattery(i, battery);
     });
   }
 
   getDeviceList() {
-    // get all devices from HyperTrack
+    // get all devices
     const options = {
       method: "get",
       url: `${process.env.SERVER_URL}/devices`
@@ -154,8 +141,8 @@ class Index extends React.Component {
       for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
 
-        if (device.device_status === "active") {
-          device.device_status = device.activity.data.value;
+        if (device.device_status.value === "active") {
+          device.device_status = device.device_status.data.activity;
         }
       }
 
