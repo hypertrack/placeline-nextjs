@@ -18,12 +18,17 @@ class MapContainer extends Component {
 
     if (this.props.devices) {
       this.props.devices.map(device => {
-        bounds.extend(
-          new google.maps.LatLng(
-            _.get(device, "location.geometry.coordinates[1]", 0),
-            _.get(device, "location.geometry.coordinates[0]", 0)
-          )
-        );
+        if (
+          _.get(device, "location.geometry.coordinates[1]", false) &&
+          _.get(device, "location.geometry.coordinates[0]", false)
+        ) {
+          bounds.extend(
+            new google.maps.LatLng(
+              _.get(device, "location.geometry.coordinates[1]", 0),
+              _.get(device, "location.geometry.coordinates[0]", 0)
+            )
+          );
+        }
       });
     }
 
@@ -31,12 +36,17 @@ class MapContainer extends Component {
       this.props.segments.map(segment => {
         if (segment.polyline && segment.polyline.length > 0) {
           for (let i = 0; i < segment.polyline.length; i++) {
-            bounds.extend(
-              new google.maps.LatLng(
-                segment.polyline[i][0],
-                segment.polyline[i][1]
-              )
-            );
+            if (
+              _.get(segment, "polyline[i][0]", false) &&
+              _.get(segment, "polyline[i][1]", false)
+            ) {
+              bounds.extend(
+                new google.maps.LatLng(
+                  segment.polyline[i][0],
+                  segment.polyline[i][1]
+                )
+              );
+            }
           }
         }
       });
@@ -48,20 +58,22 @@ class MapContainer extends Component {
   renderActivitySegments() {
     const elems = [];
 
-    if (this.props.segments) {
+    if (_.get(this.props.segments, "length", 0) > 0) {
       this.props.segments.map((segment, i) => {
-        elems.push(
-          <SegmentPolyline
-            segment={segment}
-            key={`segment-${i}`}
-            selected={
-              this.props.selectedSegments
-                ? this.props.selectedSegments.includes(i)
-                : false
-            }
-            onSelection={() => this.props.onSelection(i)}
-          />
-        );
+        if (segment) {
+          elems.push(
+            <SegmentPolyline
+              segment={segment}
+              key={`segment-${i}`}
+              selected={
+                this.props.selectedSegments
+                  ? this.props.selectedSegments.includes(i)
+                  : false
+              }
+              onSelection={() => this.props.onSelection(i)}
+            />
+          );
+        }
       });
     }
 
@@ -73,7 +85,6 @@ class MapContainer extends Component {
       <GoogleMap
         ref={elem => (this.map = elem)}
         zoom={15}
-        center={this.getBounds()}
         options={{
           styles: require("../static/map/GoogleMapStyles.json"),
           disableDefaultUI: true,
