@@ -62,13 +62,13 @@ class Placeline extends React.Component {
     // get last summaries for selected device
     const options = {
       method: "get",
-      url: `${process.env.SERVER_URL}/summaries/${this.props.query.id}`
+      url: `${process.env.SERVER_URL}/devices/${this.props.query.id}/trips`
     };
 
     axios(options).then(resp => {
       this.setState(
         {
-          summaries: resp.data
+          summaries: resp.data.map(trip => trip.summary)
         },
         () => this.selectSummaries()
       );
@@ -324,6 +324,8 @@ class Placeline extends React.Component {
     const { RangePicker } = DatePicker;
 
     const currentSummaries = this.state.currentSummaries;
+
+    console.log(this.state);
 
     return (
       <Layout>
