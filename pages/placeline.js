@@ -34,8 +34,8 @@ class Placeline extends React.Component {
       filteredSummaries: [],
       selectedSummaries: [],
       addedSegments: [],
-      startDate: moment().startOf("day"),
-      endDate: moment().endOf("day"),
+      startDate: moment().startOf("week"),
+      endDate: moment().endOf("week"),
       loading: true
     };
   }
