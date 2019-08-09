@@ -325,8 +325,6 @@ class Placeline extends React.Component {
 
     const currentSummaries = this.state.currentSummaries;
 
-    console.log(this.state);
-
     return (
       <Layout>
         <Sider width="25%" style={{ backgroundColor: "#fff" }}>
