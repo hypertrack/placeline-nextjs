@@ -160,16 +160,20 @@ class Placeline extends React.Component {
   }
 
   onExpenseSubmitted(expense) {
-    notification["success"]({
-      message: "Report sent",
-      description: `Expense report for $${expense.amount} (${
-        expense.distance
-      } km) on ${moment(expense.date).format("ll")} was submitted successfully`
-    });
+    if (expense.submitted) {
+      notification["success"]({
+        message: "Report sent",
+        description: `Expense report for $${expense.amount} (${
+          expense.distance
+        } km) on ${moment(expense.date).format(
+          "ll"
+        )} was submitted successfully`
+      });
 
-    this.setState({
-      addedSegments: []
-    });
+      this.setState({
+        addedSegments: []
+      });
+    }
   }
 
   renderSegments(segments) {

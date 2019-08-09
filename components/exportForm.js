@@ -24,7 +24,8 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
         rate: 5.8,
         amount: 0,
         date: undefined,
-        description: ""
+        description: "",
+        submitted: false
       };
     }
 
@@ -70,8 +71,23 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
       });
     }
 
+    onClose(submitted) {
+      this.setState(
+        {
+          submitted
+        },
+        () => {
+          if (submitted) {
+            this.props.onOk();
+          } else {
+            this.props.onCancel();
+          }
+        }
+      );
+    }
+
     render() {
-      const { visible, onCancel, onOk, form, loading } = this.props;
+      const { visible, form, loading } = this.props;
       const { getFieldDecorator } = form;
       const { Option } = Select;
 
@@ -80,8 +96,8 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
           visible={visible}
           title="Submit expenses"
           okText="Submit"
-          onCancel={onCancel}
-          onOk={onOk}
+          onCancel={() => this.onClose(false)}
+          onOk={() => this.onClose(true)}
           afterClose={() => this.props.onSubmitSuccess(this.state)}
           width="75%"
           footer={[
@@ -91,7 +107,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
               htmlType="submit"
               type="primary"
               loading={loading}
-              onClick={onOk}
+              onClick={() => this.onClose(true)}
             >
               Submit
             </Button>
