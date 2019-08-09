@@ -29,15 +29,20 @@ class DeviceSelection extends React.Component {
             avatar={
               <Badge
                 status={
-                  item.device_status === "disconnected" ||
-                  item.device_status === "inactive"
+                  _.get(item, "device_status.value", "disconnected") ===
+                    "disconnected" ||
+                  _.get(item, "device_status.value", "inactive") === "inactive"
                     ? "error"
                     : "success"
                 }
               >
                 <Avatar
                   shape="square"
-                  src={`../static/status/${item.device_status}.svg`}
+                  src={`../static/status/${_.get(
+                    item,
+                    "device_status.value",
+                    "disconnected"
+                  )}.svg`}
                 />
               </Badge>
             }
