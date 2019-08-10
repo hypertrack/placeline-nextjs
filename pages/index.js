@@ -23,6 +23,12 @@ class Index extends React.Component {
     this.subscribeToUdpates();
   }
 
+  onDeviceSelect() {
+    this.setState({
+      loading: true
+    });
+  }
+
   updateDeviceLocation(i, location) {
     let devices = this.state.devices;
 
@@ -162,6 +168,7 @@ class Index extends React.Component {
           <DeviceSelection
             devices={this.state.devices}
             loading={this.state.loading}
+            onSelect={() => this.onDeviceSelect()}
           />
           <Skeleton active loading={this.state.loading} />
         </Header>

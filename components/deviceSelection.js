@@ -6,6 +6,7 @@ import Router from "next/router";
 
 class DeviceSelection extends React.Component {
   handleChange(value) {
+    this.props.onSelect();
     Router.push(
       `/placeline?id=${value.key}&name=${encodeURIComponent(value.label)}`
     );
@@ -62,7 +63,7 @@ class DeviceSelection extends React.Component {
         placeholder="Select device to see placeline ..."
         optionLabelProp="label"
         loading={this.props.loading}
-        onChange={this.handleChange}
+        onChange={value => this.handleChange(value)}
       >
         {deviceItems}
       </StyledSelect>
