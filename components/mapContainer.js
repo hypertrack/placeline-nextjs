@@ -36,11 +36,11 @@ class MapContainer extends Component {
       this.props.segments.map(segment => {
         if (segment.polyline && segment.polyline.length > 0) {
           for (let i = 0; i < segment.polyline.length; i++) {
-            if (segment.polyline[i][0] && segment.polyline[i][1]) {
+            if (segment.polyline[i][1] && segment.polyline[i][0]) {
               bounds.extend(
                 new google.maps.LatLng(
-                  segment.polyline[i][0],
-                  segment.polyline[i][1]
+                  segment.polyline[i][1],
+                  segment.polyline[i][0]
                 )
               );
             }

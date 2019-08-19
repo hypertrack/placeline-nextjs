@@ -21,7 +21,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
 
       this.state = {
         distance: 0,
-        rate: 5.8,
+        rate: 3.6,
         amount: 0,
         date: undefined,
         description: "",
@@ -31,7 +31,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
 
     componentWillReceiveProps() {
       let distance = 0,
-        rate = 5.8,
+        rate = 3.6,
         amount = 0,
         date = undefined,
         description = "";
@@ -136,7 +136,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
                 </Row>
                 <Form.Item label="Rate" hasFeedback>
                   <Select defaultValue="1">
-                    <Option value="1">Default ($5.80/mile)</Option>
+                    <Option value="1">Default ($3.60/km)</Option>
                   </Select>
                 </Form.Item>
                 <Form.Item label="Date">

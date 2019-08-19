@@ -13,7 +13,7 @@ class SegmentPolyline extends Component {
     if (_.get(polyline, "length", 0) > 0) {
       for (let i = 0; i < polyline.length; i++) {
         const coordinates = polyline[i];
-        path.push({ lat: coordinates[0], lng: coordinates[1] });
+        path.push({ lat: coordinates[1], lng: coordinates[0] });
       }
     }
 
@@ -40,8 +40,8 @@ class SegmentPolyline extends Component {
               }
             }}
             position={{
-              lat: polyline[0][0],
-              lng: polyline[0][1]
+              lat: polyline[0][1],
+              lng: polyline[0][0]
             }}
           >
             <div />

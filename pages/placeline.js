@@ -95,6 +95,7 @@ class Placeline extends React.Component {
       const summary = this.state.summaries[i];
 
       if (
+        summary &&
         moment(summary.start_datetime).isAfter(this.state.startDate) &&
         moment(summary.end_datetime).isBefore(this.state.endDate)
       ) {
@@ -328,6 +329,8 @@ class Placeline extends React.Component {
     const { RangePicker } = DatePicker;
 
     const currentSummaries = this.state.currentSummaries;
+
+    console.log(currentSummaries);
 
     return (
       <Layout>
