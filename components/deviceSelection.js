@@ -21,30 +21,6 @@ class DeviceSelection extends React.Component {
       padding: 12px;
     `;
 
-    const itemAction = [
-      <a
-        key={`show-history-${item.device_id}`}
-        onClick={() => this.handleChange(item)}
-      >
-        History
-      </a>
-    ];
-
-    if (this.props.devicesLoading) {
-      itemAction.push(
-        <PlaceSelection key={`show-places-${item.device_id}`} item={item} />
-      );
-    } else {
-      itemAction.push(
-        <a
-          key={`show-places-${item.device_id}-disabled`}
-          style={{ color: "grey" }}
-        >
-          History
-        </a>
-      );
-    }
-
     return (
       <div>
         <StyledList
@@ -52,7 +28,30 @@ class DeviceSelection extends React.Component {
           dataSource={_.get(this.props, "devices", [])}
           header={<div>Tracked devices ...</div>}
           renderItem={item => (
-            <List.Item actions={itemAction}>
+            <List.Item
+              actions={[
+                <a
+                  key={`show-history-${item.device_id}`}
+                  onClick={() => this.handleChange(item)}
+                >
+                  History
+                </a>,
+                this.props.devicesLoading ? (
+                  <a
+                    key={`show-places-${item.device_id}-disabled`}
+                    style={{ color: "grey" }}
+                  >
+                    History
+                  </a>
+                ) : (
+                  <PlaceSelection
+                    key={`show-places-${item.device_id}`}
+                    item={item}
+                    places={_.get(this.props, "places", [])}
+                  />
+                )
+              ]}
+            >
               <List.Item.Meta
                 avatar={
                   <Badge

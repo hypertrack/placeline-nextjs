@@ -2,6 +2,8 @@ import { Button, Modal, Form, Select, Row, Col } from "antd";
 import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
 
 import LocationSearch from "./locationSearch";
+
+import { findPlaceByLabel } from "../common/places";
 import Map from "./map";
 
 const ExportForm = Form.create({ name: "form_in_modal" })(
@@ -9,14 +11,18 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
     constructor(props) {
       super(props);
 
+      console.log(props);
+      const homePlace = findPlaceByLabel(this.props.places, "home");
+      const workPlace = findPlaceByLabel(this.props.places, "work");
+
       this.state = {
         home: {
-          address: "",
-          coordinates: {}
+          address: _.get(homePlace, "address", ""),
+          coordinates: _.get(homePlace, "coordinates", {})
         },
         work: {
-          address: "",
-          coordinates: {}
+          address: _.get(workPlace, "address", ""),
+          coordinates: _.get(workPlace, "coordinates", {})
         },
         submitted: false
       };
@@ -79,7 +85,16 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
         },
         () => {
           if (submitted) {
-            this.props.onOk();
+            this.props.onOk([
+              {
+                label: "home",
+                ...this.state.home
+              },
+              {
+                label: "work",
+                ...this.state.work
+              }
+            ]);
           } else {
             this.props.onCancel();
           }
@@ -116,6 +131,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
               <Form layout="vertical">
                 <Form.Item label="Home address">
                   <LocationSearch
+                    value={_.get(this.state, "home.address", "")}
                     onAddressSelect={e => this.updateHomeAddress(e)}
                   />
                 </Form.Item>
@@ -123,6 +139,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
               <Form layout="vertical">
                 <Form.Item label="Work address">
                   <LocationSearch
+                    value={_.get(this.state, "work.address", "")}
                     onAddressSelect={e => this.updateWorkAddress(e)}
                   />
                 </Form.Item>

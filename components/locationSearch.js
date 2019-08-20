@@ -39,6 +39,7 @@ class LocationSearch extends Component {
         {({ getInputProps, getSuggestionItemProps, suggestions, loading }) => (
           <React.Fragment>
             <Search
+              defaultValue={this.props.value}
               loading={`${loading}`}
               {...getInputProps({
                 id: "address-input"

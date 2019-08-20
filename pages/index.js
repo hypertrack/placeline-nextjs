@@ -14,6 +14,7 @@ class Index extends React.Component {
 
     this.state = {
       devices: [],
+      places: [],
       loading: true,
       devicesLoading: true
     };
@@ -190,6 +191,7 @@ class Index extends React.Component {
         >
           <DeviceSelection
             devices={this.state.devices}
+            places={this.state.places}
             loading={this.state.loading}
             devicesLoading={this.state.devicesLoading}
             onSelect={() => this.onDeviceSelect()}

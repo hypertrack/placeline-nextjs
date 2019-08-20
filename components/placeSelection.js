@@ -1,6 +1,8 @@
 import _ from "lodash";
+import axios from "axios";
 
 import PlaceForm from "./placeForm";
+import { findPlacesByDeviceId } from "../common/places";
 
 class PlaceSelection extends React.Component {
   constructor(props) {
@@ -24,11 +26,21 @@ class PlaceSelection extends React.Component {
     this.setState({ visible: false });
   };
 
-  handleOk = () => {
+  handleOk = async places => {
     this.setState({ loading: true });
-    setTimeout(() => {
-      this.setState({ loading: false, visible: false });
-    }, 3000);
+
+    // save places
+    for (let i = 0; i < places.length; i++) {
+      await axios({
+        method: "post",
+        url: `${process.env.SERVER_URL}/device-places/${
+          this.props.item.device_id
+        }/:${places[i].label}`,
+        data: places[i]
+      });
+    }
+
+    this.setState({ loading: false, visible: false });
   };
 
   render() {
@@ -44,10 +56,11 @@ class PlaceSelection extends React.Component {
         </a>
         <PlaceForm
           wrappedComponentRef={this.saveFormRef}
+          places={findPlacesByDeviceId(this.props.places, item.device_id)}
           visible={this.state.visible}
           loading={this.state.loading}
           onCancel={this.handleCancel}
-          onOk={this.handleOk}
+          onOk={e => this.handleOk(e)}
         />
       </div>
     );
