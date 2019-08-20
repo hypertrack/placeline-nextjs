@@ -3,6 +3,7 @@ import { withGoogleMap, withScriptjs, GoogleMap } from "react-google-maps";
 
 import SegmentPolyline from "./segmentPolyline";
 import LocationMarker from "./locationMarker";
+import PlaceMarker from "./placeMarker";
 
 class MapContainer extends Component {
   componentDidUpdate() {
@@ -26,6 +27,19 @@ class MapContainer extends Component {
             new google.maps.LatLng(
               _.get(device, "location.geometry.coordinates[1]", 0),
               _.get(device, "location.geometry.coordinates[0]", 0)
+            )
+          );
+        }
+      });
+    }
+
+    if (this.props.places) {
+      this.props.places.map(place => {
+        if (Object.keys(place.coordinates).length > 1) {
+          bounds.extend(
+            new google.maps.LatLng(
+              _.get(place, "coordinates.lat", 0),
+              _.get(place, "coordinates.lng", 0)
             )
           );
         }
@@ -77,6 +91,41 @@ class MapContainer extends Component {
     return elems;
   }
 
+  renderDevices() {
+    if (!this.props.devices || this.props.devices.length === 0) {
+      return;
+    }
+
+    return this.props.devices.map((device, i) => (
+      <LocationMarker
+        key={`location-${i}`}
+        offline={
+          _.get(device, "device_status.value", "") === "disconnected" ||
+          _.get(device, "device_status.value", "") === "inactive"
+        }
+        id={_.get(device, "device_id")}
+        name={_.get(device, "device_info.name")}
+        lat={_.get(device, "location.geometry.coordinates[1]")}
+        lng={_.get(device, "location.geometry.coordinates[0]")}
+      />
+    ));
+  }
+
+  renderPlaces() {
+    if (!this.props.places || this.props.places.length === 0) {
+      return;
+    }
+
+    return this.props.places.map((place, i) => (
+      <PlaceMarker
+        key={`place-${i}`}
+        label={_.get(place, "label", "")}
+        lat={_.get(place, "coordinates.lat", 0)}
+        lng={_.get(place, "coordinates.lng", 0)}
+      />
+    ));
+  }
+
   render() {
     return (
       <GoogleMap
@@ -92,20 +141,8 @@ class MapContainer extends Component {
       >
         <Fragment>
           {this.renderActivitySegments()}
-          {this.props.devices &&
-            this.props.devices.map((device, i) => (
-              <LocationMarker
-                key={`location-${i}`}
-                offline={
-                  _.get(device, "device_status.value", "") === "disconnected" ||
-                  _.get(device, "device_status.value", "") === "inactive"
-                }
-                id={_.get(device, "device_id")}
-                name={_.get(device, "device_info.name")}
-                lat={_.get(device, "location.geometry.coordinates[1]")}
-                lng={_.get(device, "location.geometry.coordinates[0]")}
-              />
-            ))}
+          {this.renderDevices()}
+          {this.renderPlaces()}
         </Fragment>
       </GoogleMap>
     );

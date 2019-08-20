@@ -1,4 +1,4 @@
-import { notification, Skeleton, Layout } from "antd";
+import { notification, Layout } from "antd";
 import io from "socket.io-client";
 import _ from "lodash";
 import axios from "axios";
@@ -160,19 +160,24 @@ class Index extends React.Component {
   }
 
   render() {
-    const { Header } = Layout;
+    const { Sider } = Layout;
 
     return (
       <Layout>
-        <Header>
+        <Sider
+          breakpoint="lg"
+          collapsedWidth="0"
+          theme="light"
+          width="25%"
+          style={{ minHeight: "100vh" }}
+        >
           <DeviceSelection
             devices={this.state.devices}
             loading={this.state.loading}
             onSelect={() => this.onDeviceSelect()}
           />
-          <Skeleton active loading={this.state.loading} />
-        </Header>
-        {!this.state.loading && <Map devices={this.state.devices} />}
+        </Sider>
+        <Map loading={this.state.loading} devices={this.state.devices} />t
       </Layout>
     );
   }

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Skeleton } from "antd";
 import MapContainer from "./mapContainer";
 
 const API_KEY = process.env.GMAPS_KEY;
@@ -10,6 +11,10 @@ class Map extends Component {
       height: this.props.height ? this.props.height : "100vh",
       width: "100%"
     };
+
+    if (this.props.loading) {
+      return <Skeleton active loading={true} style={{ padding: "24px" }} />;
+    }
 
     return (
       <MapContainer
