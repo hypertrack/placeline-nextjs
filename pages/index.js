@@ -14,12 +14,14 @@ class Index extends React.Component {
 
     this.state = {
       devices: [],
-      loading: true
+      loading: true,
+      devicesLoading: true
     };
   }
 
   componentDidMount() {
     this.getDeviceList();
+    this.getDevicePlaces();
     this.subscribeToUdpates();
   }
 
@@ -159,6 +161,21 @@ class Index extends React.Component {
     });
   }
 
+  getDevicePlaces() {
+    // get all device places
+    const options = {
+      method: "get",
+      url: `${process.env.SERVER_URL}/device-places`
+    };
+
+    axios(options).then(resp => {
+      this.setState({
+        places: resp.data,
+        devicesLoading: false
+      });
+    });
+  }
+
   render() {
     const { Sider } = Layout;
 
@@ -174,6 +191,7 @@ class Index extends React.Component {
           <DeviceSelection
             devices={this.state.devices}
             loading={this.state.loading}
+            devicesLoading={this.state.devicesLoading}
             onSelect={() => this.onDeviceSelect()}
           />
         </Sider>
