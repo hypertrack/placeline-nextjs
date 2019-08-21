@@ -116,14 +116,21 @@ class MapContainer extends Component {
       return;
     }
 
-    return this.props.places.map((place, i) => (
-      <PlaceMarker
-        key={`place-${i}`}
-        label={_.get(place, "label", "")}
-        lat={_.get(place, "coordinates.lat", 0)}
-        lng={_.get(place, "coordinates.lng", 0)}
-      />
-    ));
+    return this.props.places.map((place, i) => {
+      // do not map invalid places
+      if (Object.keys(place.coordinates).length === 0) {
+        return;
+      }
+
+      return (
+        <PlaceMarker
+          key={`place-${i}`}
+          label={_.get(place, "label", "")}
+          lat={_.get(place, "coordinates.lat", 0)}
+          lng={_.get(place, "coordinates.lng", 0)}
+        />
+      );
+    });
   }
 
   render() {
