@@ -28,6 +28,16 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
     }
 
     updateWorkAddress(workAddress) {
+      if (!workAddress) {
+        // empty adddress
+        this.setState({
+          work: {
+            address: "",
+            coordinates: {}
+          }
+        });
+      }
+
       // geocode for map to show
       geocodeByAddress(workAddress)
         .then(async results => {
@@ -46,13 +56,24 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
           // set state without coordinates
           this.setState({
             work: {
-              address: workAddress
+              address: workAddress,
+              coordinates: {}
             }
           });
         });
     }
 
     updateHomeAddress(homeAddress) {
+      if (!homeAddress) {
+        // empty adddress
+        this.setState({
+          home: {
+            address: "",
+            coordinates: {}
+          }
+        });
+      }
+
       // geocode for map to show
       geocodeByAddress(homeAddress)
         .then(async results => {
@@ -71,7 +92,8 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
           // set state without coordinates
           this.setState({
             home: {
-              address: homeAddress
+              address: homeAddress,
+              coordinates: {}
             }
           });
         });

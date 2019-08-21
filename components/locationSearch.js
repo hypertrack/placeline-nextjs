@@ -13,10 +13,6 @@ class LocationSearch extends Component {
 
   handleAddressChange = address => {
     this.setState({ address });
-  };
-
-  onAddressSelect = address => {
-    this.setState({ address });
     this.props.onAddressSelect(address);
   };
 
@@ -33,13 +29,14 @@ class LocationSearch extends Component {
     return (
       <PlacesAutocomplete
         onChange={this.handleAddressChange}
-        onSelect={this.onAddressSelect}
+        onSelect={this.handleAddressChange}
         value={address}
       >
         {({ getInputProps, getSuggestionItemProps, suggestions, loading }) => (
           <React.Fragment>
             <Search
               loading={`${loading}`}
+              allowClear
               {...getInputProps({
                 id: "address-input"
               })}
