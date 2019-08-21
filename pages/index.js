@@ -39,13 +39,10 @@ class Index extends React.Component {
     devices[i] = {
       ...devices[i],
       location: {
-        data: {
-          speed: location.data.speed,
-          altitude: location.data.altitude,
-          location_accuracy: location.data.location_accuracy,
-          bearing: location.data.bearing,
-          location: location.data.location
-        },
+        speed: location.data.speed,
+        accuracy: location.data.accuracy,
+        bearing: location.data.bearing,
+        geometry: location.data.location,
         recorded_at: location.recorded_at
       }
     };
@@ -67,7 +64,10 @@ class Index extends React.Component {
           activity: deviceStatus.data.activity,
           reason: deviceStatus.data.reason
         },
-        value: deviceStatus.data.value
+        value:
+          deviceStatus.data.value === "active"
+            ? _.get(deviceStatus, "data.activity", "unknown_activity")
+            : deviceStatus.data.value
       }
     };
 

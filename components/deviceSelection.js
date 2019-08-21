@@ -44,6 +44,10 @@ class DeviceSelection extends React.Component {
             place: place.label
           }
         }
+      }).then(resp => {
+        const newTrip = resp.data;
+        // TODO: Figure out how to display new trip
+        console.log(newTrip);
       });
     }
   }
