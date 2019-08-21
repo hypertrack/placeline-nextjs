@@ -191,7 +191,7 @@ class Index extends React.Component {
           breakpoint="lg"
           collapsedWidth="0"
           theme="light"
-          width="25%"
+          width="30%"
           style={{ minHeight: "100vh" }}
         >
           <DeviceSelection

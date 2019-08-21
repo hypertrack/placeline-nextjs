@@ -1,3 +1,4 @@
+import { Icon } from "antd";
 import _ from "lodash";
 import axios from "axios";
 
@@ -52,7 +53,7 @@ class PlaceSelection extends React.Component {
           key={`show-places-${item.device_id}`}
           onClick={() => this.showModal()}
         >
-          Places
+          <Icon type="setting" /> Places
         </a>
         <PlaceForm
           wrappedComponentRef={this.saveFormRef}

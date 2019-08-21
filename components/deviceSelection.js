@@ -1,9 +1,11 @@
-import { Avatar, Badge, List } from "antd";
+import { Avatar, Badge, List, Icon, Menu, Dropdown } from "antd";
 import styled from "styled-components";
 import _ from "lodash";
 import Router from "next/router";
+import axios from "axios";
 
 import PlaceSelection from "./placeSelection";
+import { findPlacesByDeviceId, findPlaceByLabel } from "../common/places";
 
 class DeviceSelection extends React.Component {
   handleChange(item) {
@@ -15,6 +17,37 @@ class DeviceSelection extends React.Component {
     );
   }
 
+  createTrip(deviceId, destination) {
+    const place = findPlaceByLabel(
+      findPlacesByDeviceId(_.get(this.props, "places", []), deviceId),
+      destination
+    );
+
+    // only if place is set, create trip
+    if (_.get(place, "coordinates.lat", false)) {
+      axios({
+        method: "post",
+        url: `${process.env.SERVER_URL}/trips`,
+        data: {
+          device_id: place.device_id,
+          destination: {
+            geometry: {
+              type: "Point",
+              coordinates: [
+                _.get(place, "coordinates.lng", 0),
+                _.get(place, "coordinates.lat", 0)
+              ]
+            }
+          },
+          metadata: {
+            origin: "placeline-app",
+            place: place.label
+          }
+        }
+      });
+    }
+  }
+
   render() {
     const StyledList = styled(List)`
       min-height: 100vh;
@@ -24,32 +57,71 @@ class DeviceSelection extends React.Component {
     return (
       <div>
         <StyledList
-          itemLayout="horizontal"
+          itemLayout="vertical"
+          size="large"
           dataSource={_.get(this.props, "devices", [])}
           header={<div>Tracked devices ...</div>}
           renderItem={item => (
             <List.Item
               actions={[
-                <a
-                  key={`show-history-${item.device_id}`}
-                  onClick={() => this.handleChange(item)}
-                >
-                  History
-                </a>,
                 this.props.devicesLoading ? (
-                  <a
-                    key={`show-places-${item.device_id}-disabled`}
-                    style={{ color: "grey" }}
-                  >
-                    Places
+                  <a style={{ color: "grey" }}>
+                    <Icon type="setting" /> Places
                   </a>
                 ) : (
                   <PlaceSelection
-                    key={`show-places-${item.device_id}`}
                     item={item}
                     places={_.get(this.props, "places", [])}
                   />
-                )
+                ),
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item
+                        disabled={
+                          findPlaceByLabel(
+                            findPlacesByDeviceId(
+                              _.get(this.props, "places", []),
+                              item.device_id
+                            ),
+                            "home"
+                          ).address === ""
+                        }
+                      >
+                        <a
+                          onClick={() =>
+                            this.createTrip(item.device_id, "home")
+                          }
+                        >
+                          Home
+                        </a>
+                      </Menu.Item>
+                      <Menu.Item
+                        disabled={
+                          findPlaceByLabel(
+                            findPlacesByDeviceId(
+                              _.get(this.props, "places", []),
+                              item.device_id
+                            ),
+                            "work"
+                          ).address === ""
+                        }
+                      >
+                        <a
+                          onClick={() =>
+                            this.createTrip(item.device_id, "work")
+                          }
+                        >
+                          Work
+                        </a>
+                      </Menu.Item>
+                    </Menu>
+                  }
+                >
+                  <a>
+                    <Icon type="down" /> Create trip to ...
+                  </a>
+                </Dropdown>
               ]}
             >
               <List.Item.Meta
@@ -74,7 +146,12 @@ class DeviceSelection extends React.Component {
                     />
                   </Badge>
                 }
-                title={_.get(item, "device_info.name", item.device_id)}
+                title={
+                  <a onClick={() => this.handleChange(item)}>
+                    {_.get(item, "device_info.name", "")}
+                  </a>
+                }
+                description={_.get(item, "device_id", "")}
               />
             </List.Item>
           )}
