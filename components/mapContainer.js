@@ -2,6 +2,7 @@ import React, { Fragment, Component } from "react";
 import { withGoogleMap, withScriptjs, GoogleMap } from "react-google-maps";
 
 import SegmentPolyline from "./segmentPolyline";
+import RoutePolyline from "./routePolyline";
 import LocationMarker from "./locationMarker";
 import PlaceMarker from "./placeMarker";
 
@@ -56,6 +57,21 @@ class MapContainer extends Component {
                   segment.polyline[i][1],
                   segment.polyline[i][0]
                 )
+              );
+            }
+          }
+        }
+      });
+    }
+
+    if (this.props.trips) {
+      this.props.trips.map(trip => {
+        const polyline = _.get(trip, "estimate.route.polyline.coordinates");
+        if (polyline && polyline.length > 0) {
+          for (let i = 0; i < polyline.length; i++) {
+            if (polyline[i][1] && polyline[i][0]) {
+              bounds.extend(
+                new google.maps.LatLng(polyline[i][1], polyline[i][0])
               );
             }
           }
@@ -133,6 +149,25 @@ class MapContainer extends Component {
     });
   }
 
+  renderTrips() {
+    const elems = [];
+
+    if (_.get(this.props.trips, "length", 0) > 0) {
+      this.props.trips.map((trip, i) => {
+        if (trip) {
+          elems.push(
+            <RoutePolyline
+              route={_.get(trip, "estimate.route")}
+              key={`route-${i}`}
+            />
+          );
+        }
+      });
+    }
+
+    return elems;
+  }
+
   render() {
     return (
       <GoogleMap
@@ -150,6 +185,7 @@ class MapContainer extends Component {
           {this.renderActivitySegments()}
           {this.renderDevices()}
           {this.renderPlaces()}
+          {this.renderTrips()}
         </Fragment>
       </GoogleMap>
     );

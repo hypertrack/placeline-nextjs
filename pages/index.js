@@ -15,15 +15,15 @@ class Index extends React.Component {
     this.state = {
       devices: [],
       places: [],
+      trips: [],
       loading: true,
-      devicesLoading: true
+      devicesLoading: true,
+      tripsLoading: true
     };
   }
 
   componentDidMount() {
     this.getDeviceList();
-    this.getDevicePlaces();
-    this.subscribeToUdpates();
   }
 
   onDeviceSelect() {
@@ -164,6 +164,10 @@ class Index extends React.Component {
         devices,
         loading: false
       });
+
+      // with known devices, subscribe to updates and get places
+      this.subscribeToUdpates();
+      this.getDevicePlaces();
     });
   }
 
@@ -178,6 +182,30 @@ class Index extends React.Component {
       this.setState({
         places: resp.data,
         devicesLoading: false
+      });
+
+      // with places and devices, get trips
+      this.getTrips();
+    });
+  }
+
+  getTrips() {
+    // get all trips created by the sample app
+    const options = {
+      method: "get",
+      url: `${process.env.SERVER_URL}/trips`,
+      params: {
+        status: "active",
+        metadata: {
+          origin: "placeline-app"
+        }
+      }
+    };
+
+    axios(options).then(resp => {
+      this.setState({
+        trips: resp.data,
+        tripsLoading: false
       });
     });
   }
@@ -202,7 +230,12 @@ class Index extends React.Component {
             onSelect={() => this.onDeviceSelect()}
           />
         </Sider>
-        <Map loading={this.state.loading} devices={this.state.devices} />t
+        <Map
+          loading={this.state.loading}
+          devices={this.state.devices}
+          trips={this.state.trips}
+        />
+        t
       </Layout>
     );
   }
