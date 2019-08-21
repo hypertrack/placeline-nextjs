@@ -35,7 +35,7 @@ class PlaceSelection extends React.Component {
         method: "post",
         url: `${process.env.SERVER_URL}/device-places/${
           this.props.item.device_id
-        }/:${places[i].label}`,
+        }/${places[i].label}`,
         data: places[i]
       });
     }

@@ -6,12 +6,11 @@ import LocationSearch from "./locationSearch";
 import { findPlaceByLabel } from "../common/places";
 import Map from "./map";
 
-const ExportForm = Form.create({ name: "form_in_modal" })(
+const PlaceForm = Form.create({ name: "form_in_modal" })(
   class extends React.Component {
     constructor(props) {
       super(props);
 
-      console.log(props);
       const homePlace = findPlaceByLabel(this.props.places, "home");
       const workPlace = findPlaceByLabel(this.props.places, "work");
 
@@ -167,4 +166,4 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
   }
 );
 
-export default ExportForm;
+export default PlaceForm;

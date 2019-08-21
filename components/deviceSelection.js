@@ -41,7 +41,7 @@ class DeviceSelection extends React.Component {
                     key={`show-places-${item.device_id}-disabled`}
                     style={{ color: "grey" }}
                   >
-                    History
+                    Places
                   </a>
                 ) : (
                   <PlaceSelection

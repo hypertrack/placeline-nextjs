@@ -151,7 +151,12 @@ class Index extends React.Component {
         const device = devices[i];
 
         if (device.device_status.value === "active") {
-          device.device_status.value = device.device_status.data.activity;
+          // TODO: This is a known bug
+          device.device_status.value = _.get(
+            device.device_status,
+            "data.activity",
+            "unknown_activity"
+          );
         }
       }
 
