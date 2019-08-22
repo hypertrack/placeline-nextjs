@@ -5,6 +5,8 @@ const {
 } = require("react-google-maps/lib/components/addons/MarkerWithLabel");
 import _ from "lodash";
 
+import { getDeviceColor } from "../common/devices";
+
 class RoutePolyline extends Component {
   render() {
     const polyline = _.get(this.props, "route.polyline.coordinates");
@@ -28,6 +30,13 @@ class RoutePolyline extends Component {
               borderRadius: "50%",
               zIndex: "-100"
             }}
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              strokeColor: getDeviceColor(
+                _.get(this.props, "trip.device_id", "")
+              ),
+              scale: 5
+            }}
             position={{
               lat: polyline[polyline.length - 1][1],
               lng: polyline[polyline.length - 1][0]
@@ -40,8 +49,10 @@ class RoutePolyline extends Component {
           path={path}
           geodesic={true}
           options={{
-            strokeColor: "#02CE5C",
-            strokeOpacity: 0.75,
+            strokeColor: getDeviceColor(
+              _.get(this.props, "trip.device_id", "")
+            ),
+            strokeOpacity: 0.95,
             strokeWeight: 3
           }}
         />

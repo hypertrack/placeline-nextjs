@@ -1,11 +1,10 @@
-import { Avatar, Badge, List, Icon, Menu, Dropdown } from "antd";
+import { Avatar, List, Icon, Badge, Tag } from "antd";
 import styled from "styled-components";
 import _ from "lodash";
 import Router from "next/router";
-import axios from "axios";
 
 import PlaceSelection from "./placeSelection";
-import { findPlacesByDeviceId, findPlaceByLabel } from "../common/places";
+import { getDeviceColor } from "../common/devices";
 
 class DeviceSelection extends React.Component {
   handleChange(item) {
@@ -17,39 +16,18 @@ class DeviceSelection extends React.Component {
     );
   }
 
-  createTrip(deviceId, destination) {
-    const place = findPlaceByLabel(
-      findPlacesByDeviceId(_.get(this.props, "places", []), deviceId),
-      destination
-    );
+  getTripAmount(device) {
+    const { trips } = this.props;
+    let tripAmount = 0;
 
-    // only if place is set, create trip
-    if (_.get(place, "coordinates.lat", false)) {
-      axios({
-        method: "post",
-        url: `${process.env.SERVER_URL}/trips`,
-        data: {
-          device_id: place.device_id,
-          destination: {
-            geometry: {
-              type: "Point",
-              coordinates: [
-                _.get(place, "coordinates.lng", 0),
-                _.get(place, "coordinates.lat", 0)
-              ]
-            }
-          },
-          metadata: {
-            origin: "placeline-app",
-            place: place.label
-          }
-        }
-      }).then(resp => {
-        const newTrip = resp.data;
-        // TODO: Figure out how to display new trip
-        console.log(newTrip);
-      });
+    for (let i = 0; i < trips.length; i++) {
+      const trip = trips[i];
+      if (trip.device_id === device.device_id) {
+        tripAmount++;
+      }
     }
+
+    return tripAmount;
   }
 
   render() {
@@ -77,86 +55,36 @@ class DeviceSelection extends React.Component {
                     item={item}
                     places={_.get(this.props, "places", [])}
                   />
-                ),
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item
-                        disabled={
-                          findPlaceByLabel(
-                            findPlacesByDeviceId(
-                              _.get(this.props, "places", []),
-                              item.device_id
-                            ),
-                            "home"
-                          ).address === ""
-                        }
-                      >
-                        <a
-                          onClick={() =>
-                            this.createTrip(item.device_id, "home")
-                          }
-                        >
-                          Home
-                        </a>
-                      </Menu.Item>
-                      <Menu.Item
-                        disabled={
-                          findPlaceByLabel(
-                            findPlacesByDeviceId(
-                              _.get(this.props, "places", []),
-                              item.device_id
-                            ),
-                            "work"
-                          ).address === ""
-                        }
-                      >
-                        <a
-                          onClick={() =>
-                            this.createTrip(item.device_id, "work")
-                          }
-                        >
-                          Work
-                        </a>
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <a>
-                    <Icon type="down" /> Create trip to ...
-                  </a>
-                </Dropdown>
+                )
               ]}
             >
               <List.Item.Meta
                 avatar={
-                  <Badge
-                    status={
-                      _.get(item, "device_status.value", "disconnected") ===
-                        "disconnected" ||
-                      _.get(item, "device_status.value", "inactive") ===
-                        "inactive"
-                        ? "error"
-                        : "success"
-                    }
-                  >
-                    <Avatar
-                      shape="square"
-                      src={`../static/status/${_.get(
-                        item,
-                        "device_status.value",
-                        "disconnected"
-                      )}.svg`}
-                    />
-                  </Badge>
+                  <Avatar
+                    style={{
+                      color: `#${_.get(item, "device_info.name", "")}`
+                    }}
+                    shape="square"
+                    src={`../static/status/${_.get(
+                      item,
+                      "device_status.value",
+                      "disconnected"
+                    )}.svg`}
+                  />
                 }
                 title={
                   <a onClick={() => this.handleChange(item)}>
+                    <Tag color={getDeviceColor(item.device_id)}>•</Tag>
                     {_.get(item, "device_info.name", "")}
                   </a>
                 }
-                description={_.get(item, "device_id", "")}
+                description={
+                  this.props.tripsLoading
+                    ? ""
+                    : `${this.getTripAmount(item)} active trip(s)`
+                }
               />
+              {`Device ID: ${_.get(item, "device_id", "")}`}
             </List.Item>
           )}
           loading={this.props.loading}

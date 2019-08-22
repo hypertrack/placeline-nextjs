@@ -157,6 +157,7 @@ class MapContainer extends Component {
         if (trip) {
           elems.push(
             <RoutePolyline
+              trip={trip}
               route={_.get(trip, "estimate.route")}
               key={`route-${i}`}
             />

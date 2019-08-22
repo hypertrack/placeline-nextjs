@@ -195,10 +195,7 @@ class Index extends React.Component {
       method: "get",
       url: `${process.env.SERVER_URL}/trips`,
       params: {
-        status: "active",
-        metadata: {
-          origin: "placeline-app"
-        }
+        status: "active"
       }
     };
 
@@ -226,7 +223,9 @@ class Index extends React.Component {
             devices={this.state.devices}
             places={this.state.places}
             loading={this.state.loading}
+            trips={this.state.trips}
             devicesLoading={this.state.devicesLoading}
+            tripsLoading={this.state.tripsLoading}
             onSelect={() => this.onDeviceSelect()}
           />
         </Sider>
