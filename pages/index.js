@@ -191,7 +191,7 @@ class Index extends React.Component {
         const device = devices[i];
 
         if (device.device_status.value === "active") {
-          // TODO: This is a known bug
+          // This is a known bug
           device.device_status.value = _.get(
             device.device_status,
             "data.activity",
