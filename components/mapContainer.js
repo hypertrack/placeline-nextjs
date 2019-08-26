@@ -1,5 +1,10 @@
 import React, { Fragment, Component } from "react";
-import { withGoogleMap, withScriptjs, GoogleMap } from "react-google-maps";
+import {
+  withGoogleMap,
+  withScriptjs,
+  GoogleMap,
+  Circle
+} from "react-google-maps";
 
 import SegmentPolyline from "./segmentPolyline";
 import RoutePolyline from "./routePolyline";
@@ -155,6 +160,8 @@ class MapContainer extends Component {
     if (_.get(this.props.trips, "length", 0) > 0) {
       this.props.trips.map((trip, i) => {
         if (trip) {
+          console.log(trip);
+
           elems.push(
             <RoutePolyline
               trip={trip}
@@ -162,6 +169,27 @@ class MapContainer extends Component {
               key={`route-${i}`}
             />
           );
+
+          // render geofences
+          if (trip.geofences && _.get(trip, "geofences.length", 0) > 0) {
+            for (let i = 0; i < trip.geofences.length; i++) {
+              const fence = trip.geofences[i];
+
+              elems.push(
+                <Circle
+                  defaultCenter={{
+                    lat: parseFloat(fence.geometry.coordinates[1]),
+                    lng: parseFloat(fence.geometry.coordinates[0])
+                  }}
+                  radius={fence.radius || 30}
+                  options={{
+                    fillColor: "#ffa800",
+                    fillOpacity: 0.24
+                  }}
+                />
+              );
+            }
+          }
         }
       });
     }
