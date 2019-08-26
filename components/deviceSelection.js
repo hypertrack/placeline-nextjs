@@ -79,7 +79,7 @@ class DeviceSelection extends React.Component {
                   </a>
                 }
                 description={
-                  this.props.tripsLoading
+                  this.props.tripsLoading || this.getTripAmount(item) < 1
                     ? ""
                     : `${this.getTripAmount(item)} active trip(s)`
                 }
