@@ -92,25 +92,30 @@ class Index extends React.Component {
   }
 
   updateTripStatus(i, tripUpdate) {
-    let trips = this.state.trips;
+    let tripsState = this.state.trips;
 
     // update trips without new Trips API call
-    trips[i] = {
-      ...trips[i],
+    tripsState[i] = {
+      ...tripsState[i],
+      status:
+        tripUpdate.data.value === "completed"
+          ? "completed"
+          : tripsState[i].status,
       summary:
         tripUpdate.data.value === "completed"
           ? tripUpdate.data.summary
-          : trips[i].summary,
+          : tripsState[i].summary,
       estimate: {
         arrive_at:
           tripUpdate.data.value === "delayed"
             ? tripUpdate.data.arrive_at
-            : trips[i].estimate.arrive_at
+            : tripsState[i].estimate.arrive_at
       }
     };
 
+    // likely going to change: only manage active trips
     this.setState({
-      trips
+      trips: tripsState.filter(trip => trip.status === "active")
     });
   }
 
@@ -160,10 +165,7 @@ class Index extends React.Component {
     });
 
     this.socket.on("trip", tripUpdate => {
-      const { trip, i } = findTripById(
-        this.state.trips,
-        tripUpdate.data.trip_id
-      );
+      const { i } = findTripById(this.state.trips, tripUpdate.data.trip_id);
       const { device } = findDeviceById(
         this.state.devices,
         tripUpdate.device_id
