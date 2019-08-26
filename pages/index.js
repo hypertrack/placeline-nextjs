@@ -7,6 +7,7 @@ import DeviceSelection from "../components/deviceSelection";
 import Map from "../components/map";
 
 import { findDeviceById } from "../common/devices";
+import { findTripById } from "../common/trips";
 
 class Index extends React.Component {
   constructor(props) {
@@ -90,6 +91,29 @@ class Index extends React.Component {
     });
   }
 
+  updateTripStatus(i, tripUpdate) {
+    let trips = this.state.trips;
+
+    // update trips without new Trips API call
+    trips[i] = {
+      ...trips[i],
+      summary:
+        tripUpdate.data.value === "completed"
+          ? tripUpdate.data.summary
+          : trips[i].summary,
+      estimate: {
+        arrive_at:
+          tripUpdate.data.value === "delayed"
+            ? tripUpdate.data.arrive_at
+            : trips[i].estimate.arrive_at
+      }
+    };
+
+    this.setState({
+      trips
+    });
+  }
+
   showNotification(text, device) {
     const deviceName = device
       ? _.get(device, "device_info.name", "")
@@ -133,6 +157,20 @@ class Index extends React.Component {
 
       this.showNotification("Updated battery status", device);
       this.updateDeviceBattery(i, battery);
+    });
+
+    this.socket.on("trip", tripUpdate => {
+      const { trip, i } = findTripById(
+        this.state.trips,
+        tripUpdate.data.trip_id
+      );
+      const { device } = findDeviceById(
+        this.state.devices,
+        tripUpdate.device_id
+      );
+
+      this.showNotification("Updated trip status", device);
+      this.updateTripStatus(i, tripUpdate);
     });
   }
 
