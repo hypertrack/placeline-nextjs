@@ -177,12 +177,14 @@ class MapContainer extends Component {
 
               elems.push(
                 <Circle
+                  key={`geofence-${i}`}
                   defaultCenter={{
                     lat: parseFloat(fence.geometry.coordinates[1]),
                     lng: parseFloat(fence.geometry.coordinates[0])
                   }}
                   radius={fence.radius || 30}
                   options={{
+                    strokeOpacity: 0,
                     fillColor: "#ffa800",
                     fillOpacity: 0.24
                   }}
