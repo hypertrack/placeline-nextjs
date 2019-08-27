@@ -16,14 +16,7 @@ class LocationMarker extends Component {
 
   renderInfoBox() {
     return (
-      <InfoBox
-        options={{ closeBoxURL: ``, enableEventPropagation: true }}
-        alignBottom={true}
-        infoBoxClearance={new google.maps.Size(1, 1)}
-        pixelOffset={new google.maps.Size(-165, -45)}
-        disableAutoPan={false}
-        maxWidth="200px"
-      >
+      <InfoBox options={{ closeBoxURL: ``, enableEventPropagation: true }}>
         <div
           style={{
             backgroundColor: getDeviceColor(this.props.id),

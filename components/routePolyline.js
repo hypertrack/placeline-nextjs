@@ -58,7 +58,7 @@ class RoutePolyline extends Component {
               radius={_.get(this.props, "trip.destination.radius", 30)}
               options={{
                 strokeOpacity: 0,
-                fillColor: "#ffa800",
+                fillColor: "#00ce5b",
                 fillOpacity: 0.24
               }}
             />

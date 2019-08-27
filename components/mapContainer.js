@@ -118,17 +118,32 @@ class MapContainer extends Component {
     }
 
     return this.props.devices.map((device, i) => (
-      <LocationMarker
-        key={`location-${i}`}
-        offline={
-          _.get(device, "device_status.value", "") === "disconnected" ||
-          _.get(device, "device_status.value", "") === "inactive"
-        }
-        id={_.get(device, "device_id")}
-        name={_.get(device, "device_info.name")}
-        lat={_.get(device, "location.geometry.coordinates[1]")}
-        lng={_.get(device, "location.geometry.coordinates[0]")}
-      />
+      <div>
+        <Circle
+          key={`device-${_.get(device, "device_id", "")}`}
+          defaultCenter={{
+            lat: _.get(device, "location.geometry.coordinates[1]"),
+            lng: _.get(device, "location.geometry.coordinates[0]")
+          }}
+          radius={_.get(device, "location.accuracy", 30)}
+          options={{
+            strokeOpacity: 0,
+            fillColor: "#00ce5b",
+            fillOpacity: 0.24
+          }}
+        />
+        <LocationMarker
+          key={`location-${i}`}
+          offline={
+            _.get(device, "device_status.value", "") === "disconnected" ||
+            _.get(device, "device_status.value", "") === "inactive"
+          }
+          id={_.get(device, "device_id")}
+          name={_.get(device, "device_info.name")}
+          lat={_.get(device, "location.geometry.coordinates[1]")}
+          lng={_.get(device, "location.geometry.coordinates[0]")}
+        />
+      </div>
     ));
   }
 
