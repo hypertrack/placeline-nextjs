@@ -175,7 +175,7 @@ class MapContainer extends Component {
 
               elems.push(
                 <Circle
-                  key={`geofence-${i}`}
+                  key={`geofence-${i}-${trip.trip_id}`}
                   defaultCenter={{
                     lat: parseFloat(fence.geometry.coordinates[1]),
                     lng: parseFloat(fence.geometry.coordinates[0])
