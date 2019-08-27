@@ -68,7 +68,14 @@ class Placeline extends React.Component {
     axios(options).then(resp => {
       this.setState(
         {
-          summaries: resp.data.map(trip => trip.summary)
+          summaries: resp.data
+            .map(function(trip, i) {
+              return {
+                tripNumber: i,
+                summary: trip.summary
+              };
+            })
+            .filter(x => x.summary !== null)
         },
         () => this.selectSummaries()
       );
@@ -80,7 +87,8 @@ class Placeline extends React.Component {
   }
 
   selectSummaries() {
-    let segments = [],
+    let tripNumbers = [],
+      segments = [],
       duration = 0,
       distance = 0,
       steps = 0,
@@ -92,7 +100,7 @@ class Placeline extends React.Component {
     const relevantSegments = ["run", "drive", "cycle", "stop", "walk"];
 
     for (let i = 0; i < this.state.summaries.length; i++) {
-      const summary = this.state.summaries[i];
+      const { tripNumber, summary } = this.state.summaries[i];
 
       if (
         summary &&
@@ -120,19 +128,21 @@ class Placeline extends React.Component {
               segment.steps > 10 ||
               segment.duration > 60
             ) {
+              tripNumbers.push(tripNumber);
               segments.push(segment);
             }
           }
         });
 
-        duration += summary.duration;
-        distance += summary.distance;
-        steps += summary.steps;
+        duration += _.get(summary, "duration", 0);
+        distance += _.get(summary, "distance", 0);
+        steps += _.get(summary, "steps", 0);
       }
     }
 
     this.setState({
       currentSummaries: {
+        tripNumbers,
         segments,
         duration,
         distance,
@@ -177,7 +187,7 @@ class Placeline extends React.Component {
     }
   }
 
-  renderSegments(segments) {
+  renderSegments(tripNumbers, segments) {
     return segments.map((segment, i) => (
       <SegmentPlaceline
         segment={segment}
@@ -185,8 +195,8 @@ class Placeline extends React.Component {
         added={this.state.addedSegments.includes(i)}
         onAdd={() => this.onSegmentAdd(i)}
         onSelection={() => this.onSegmentSelect(i)}
-        id={i}
-        key={i}
+        id={tripNumbers[i]}
+        key={`segment-${i}-${tripNumbers[i]}`}
       />
     ));
   }
@@ -221,7 +231,10 @@ class Placeline extends React.Component {
         >
           {moment(currentSummaries.start_datetime).format(CALENDAR_FORMAT)}
         </StyledItem>
-        {this.renderSegments(currentSummaries.segments)}
+        {this.renderSegments(
+          currentSummaries.tripNumbers,
+          currentSummaries.segments
+        )}
         <StyledItem
           dot={<Icon type="check-circle" style={{ fontSize: "16px" }} />}
           color="green"

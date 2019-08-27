@@ -63,7 +63,9 @@ class SegmentPlaceline extends Component {
         <Row type="flex" justify="space-around" align="middle" gutter={8}>
           <Col offset={4} span={16} onClick={this.props.onSelection}>
             <p style={{ color: "#D3D3D3", marginTop: "15px" }}>
-              {moment(segment.start_datetime).format("MM/DD/YY h:mmA")}
+              {`Trip #${id} - ${moment(segment.start_datetime).format(
+                "MM/DD/YY h:mmA"
+              )}`}
             </p>
             <p style={{ color: "#737373" }}>{description}</p>
             <p style={{ marginBottom: "15px" }}>{overview}</p>
