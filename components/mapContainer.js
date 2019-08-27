@@ -160,8 +160,6 @@ class MapContainer extends Component {
     if (_.get(this.props.trips, "length", 0) > 0) {
       this.props.trips.map((trip, i) => {
         if (trip) {
-          console.log(trip);
-
           elems.push(
             <RoutePolyline
               trip={trip}
