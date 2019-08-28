@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "next & lt --subdomain hypertrack-frontend-agraebe --port 3000",
+    "dev": "next & lt --subdomain hypertrack-frontend-agraebe --port 3000 --open",
     "build": "next build",
     "start": "next start -p $PORT"
   },

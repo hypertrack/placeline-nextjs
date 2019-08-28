@@ -6,17 +6,14 @@ import axios from "axios";
 import DeviceSelection from "../components/deviceSelection";
 import Map from "../components/map";
 
-import { findDeviceById } from "../common/devices";
-import { findTripById } from "../common/trips";
-
 class Index extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      devices: [],
+      devices: {},
       places: [],
-      trips: [],
+      trips: {},
       loading: true,
       devicesLoading: true,
       tripsLoading: true
@@ -33,12 +30,12 @@ class Index extends React.Component {
     });
   }
 
-  updateDeviceLocation(i, location) {
-    let devices = this.state.devices;
+  updateDeviceLocation(id, location) {
+    let { devices } = this.state;
 
     // update device without new Devices API call
-    devices[i] = {
-      ...devices[i],
+    devices[id] = {
+      ...devices[id],
       location: {
         speed: location.data.speed,
         accuracy: location.data.accuracy,
@@ -53,12 +50,12 @@ class Index extends React.Component {
     });
   }
 
-  updateDeviceStatus(i, deviceStatus) {
-    let devices = this.state.devices;
+  updateDeviceStatus(id, deviceStatus) {
+    let { devices } = this.state;
 
     // update device without new Devices API call
-    devices[i] = {
-      ...devices[i],
+    devices[id] = {
+      ...devices[id],
       device_status: {
         data: {
           recorded_at: deviceStatus.recorded_at,
@@ -77,46 +74,32 @@ class Index extends React.Component {
     });
   }
 
-  updateDeviceBattery(i, battery) {
-    let devices = this.state.devices;
-
-    // update device without new Devices API call
-    devices[i] = {
-      ...devices[i],
-      battery: battery.data.value
-    };
-
-    this.setState({
-      devices
-    });
-  }
-
-  updateTripStatus(i, tripUpdate) {
+  updateTripStatus(id, tripUpdate) {
     let tripsState = this.state.trips;
 
-    if (_.get(tripsState, "[i]", false)) {
+    if (_.get(tripsState, `[${id}]`, false)) {
       // update trips without new Trips API call
-      tripsState[i] = {
-        ...tripsState[i],
+      tripsState[id] = {
+        ...tripsState[id],
         status:
           tripUpdate.data.value === "completed"
             ? "completed"
-            : tripsState[i].status,
+            : tripsState[id].status,
         summary:
           tripUpdate.data.value === "completed"
             ? tripUpdate.data.summary
-            : tripsState[i].summary,
+            : tripsState[id].summary,
         estimate: {
           arrive_at:
             tripUpdate.data.value === "delayed"
               ? tripUpdate.data.arrive_at
-              : tripsState[i].estimate.arrive_at
+              : tripsState[id].estimate.arrive_at
         }
       };
 
-      // likely going to change: only manage active trips
+      // likely going to change: only handle active trips
       this.setState({
-        trips: tripsState.filter(trip => trip.status === "active")
+        trips: _.pickBy(tripsState, val => val.status === "active")
       });
     }
   }
@@ -125,44 +108,21 @@ class Index extends React.Component {
     this.socket = io(process.env.SERVER_URL);
 
     this.socket.on("location", location => {
-      const { device, i } = findDeviceById(
-        this.state.devices,
-        location.device_id
-      );
-
-      this.updateDeviceLocation(i, location);
+      this.updateDeviceLocation(location.device_id, location);
     });
 
     this.socket.on("device_status", deviceStatus => {
-      const { device, i } = findDeviceById(
-        this.state.devices,
-        deviceStatus.device_id
-      );
-
-      this.updateDeviceStatus(i, deviceStatus);
-    });
-
-    this.socket.on("battery", battery => {
-      const { device, i } = findDeviceById(
-        this.state.devices,
-        battery.device_id
-      );
-
-      this.updateDeviceBattery(i, battery);
+      this.updateDeviceStatus(deviceStatus.device_id, deviceStatus);
     });
 
     this.socket.on("trip", tripUpdate => {
-      const { i } = findTripById(this.state.trips, tripUpdate.data.trip_id);
-      const { device } = findDeviceById(
-        this.state.devices,
-        tripUpdate.device_id
-      );
-
-      this.updateTripStatus(i, tripUpdate);
+      this.updateTripStatus(tripUpdate.data.trip_id, tripUpdate);
     });
   }
 
   getDeviceList() {
+    let devices = {};
+
     // get all devices
     const options = {
       method: "get",
@@ -170,20 +130,19 @@ class Index extends React.Component {
     };
 
     axios(options).then(resp => {
-      let devices = resp.data;
-
       // update device_status
-      for (let i = 0; i < devices.length; i++) {
-        const device = devices[i];
-
-        if (device.device_status.value === "active") {
+      for (let i = 0; i < resp.data.length; i++) {
+        if (resp.data[i].device_status.value === "active") {
           // This is a known bug
-          device.device_status.value = _.get(
-            device.device_status,
+          resp.data[i].device_status.value = _.get(
+            resp.data[i].device_status,
             "data.activity",
             "unknown_activity"
           );
         }
+
+        // store in object
+        devices[resp.data[i].device_id] = resp.data[i];
       }
 
       this.setState({
@@ -216,6 +175,8 @@ class Index extends React.Component {
   }
 
   getTrips() {
+    let trips = {};
+
     // get all trips created by the sample app
     const options = {
       method: "get",
@@ -226,8 +187,13 @@ class Index extends React.Component {
     };
 
     axios(options).then(resp => {
+      for (let i = 0; i < resp.data.length; i++) {
+        // store in object
+        trips[resp.data[i].trip_id] = resp.data[i];
+      }
+
       this.setState({
-        trips: resp.data,
+        trips,
         tripsLoading: false
       });
     });
@@ -235,6 +201,9 @@ class Index extends React.Component {
 
   render() {
     const { Sider } = Layout;
+
+    const tripArr = _.toArray(this.state.trips);
+    const deviceArr = _.toArray(this.state.devices);
 
     return (
       <Layout>
@@ -246,20 +215,16 @@ class Index extends React.Component {
           style={{ minHeight: "100vh" }}
         >
           <DeviceSelection
-            devices={this.state.devices}
+            devices={deviceArr}
             places={this.state.places}
             loading={this.state.loading}
-            trips={this.state.trips}
+            trips={tripArr}
             devicesLoading={this.state.devicesLoading}
             tripsLoading={this.state.tripsLoading}
             onSelect={() => this.onDeviceSelect()}
           />
         </Sider>
-        <Map
-          loading={this.state.loading}
-          devices={this.state.devices}
-          trips={this.state.trips}
-        />
+        <Map loading={this.state.loading} devices={deviceArr} trips={tripArr} />
         t
       </Layout>
     );

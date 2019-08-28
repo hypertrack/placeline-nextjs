@@ -19,18 +19,13 @@ class PlaceMarker extends Component {
             backgroundColor: "#E2B914",
             padding: "6px 9px",
             borderRadius: "6px",
-            minWidth: "50px"
+            minWidth: "50px",
+            fontSize: `8pt`,
+            fontColor: `#ffffff`,
+            textAlign: "center"
           }}
         >
-          <div
-            style={{
-              fontSize: `8pt`,
-              fontColor: `#ffffff`,
-              textAlign: "center"
-            }}
-          >
-            {this.props.label}
-          </div>
+          {this.props.label}
         </div>
       </InfoBox>
     );

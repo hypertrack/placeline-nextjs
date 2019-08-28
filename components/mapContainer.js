@@ -21,7 +21,7 @@ class MapContainer extends Component {
     let bounds = new google.maps.LatLngBounds();
 
     if (this.props.devices) {
-      this.props.devices.map(device => {
+      _.toArray(this.props.devices).map(device => {
         if (
           _.get(device, "location.geometry.coordinates[1]", false) &&
           _.get(device, "location.geometry.coordinates[0]", false)
@@ -119,11 +119,11 @@ class MapContainer extends Component {
   }
 
   renderDevices() {
-    if (!this.props.devices || this.props.devices.length === 0) {
+    if (!this.props.devices || Object.keys(this.props.devices).length === 0) {
       return;
     }
 
-    return this.props.devices.map((device, i) => (
+    return _.toArray(this.props.devices).map((device, i) => (
       <div key={`device-${device.device_id}-${i}`}>
         <Circle
           key={`device-${_.get(device, "device_id", "")}`}

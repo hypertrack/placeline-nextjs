@@ -1,4 +1,4 @@
-import { Avatar, List, Icon, Badge, Tag } from "antd";
+import { Avatar, List, Icon, Input, Tag } from "antd";
 import styled from "styled-components";
 import _ from "lodash";
 import Router from "next/router";
@@ -7,6 +7,15 @@ import PlaceSelection from "./placeSelection";
 import { getDeviceColor } from "../common/devices";
 
 class DeviceSelection extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      filterText: "",
+      filteredDevices: []
+    };
+  }
+
   handleChange(item) {
     this.props.onSelect();
     Router.push(
@@ -30,6 +39,22 @@ class DeviceSelection extends React.Component {
     return tripAmount;
   }
 
+  filterDevices(filterText) {
+    this.setState({
+      filterText,
+      filteredDevices: this.props.devices.filter(device => {
+        return (
+          _.defaultTo(_.get(device, "device_info.name"), "")
+            .toLowerCase()
+            .includes(filterText) ||
+          _.defaultTo(_.get(device, "device_id"), "")
+            .toLowerCase()
+            .includes(filterText)
+        );
+      })
+    });
+  }
+
   render() {
     const StyledList = styled(List)`
       height: 100vh;
@@ -38,12 +63,24 @@ class DeviceSelection extends React.Component {
       padding: 12px;
     `;
 
+    const { Search } = Input;
+
+    const devices =
+      this.state.filterText === ""
+        ? this.props.devices
+        : this.state.filteredDevices;
+
     return (
       <div>
+        <Search
+          placeholder="Search for device ID or name ..."
+          onChange={e => this.filterDevices(e.target.value)}
+          value={this.state.filterText}
+        />
         <StyledList
           itemLayout="vertical"
           size="large"
-          dataSource={_.get(this.props, "devices", [])}
+          dataSource={devices}
           renderItem={item => (
             <List.Item
               actions={[
