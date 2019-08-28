@@ -51,7 +51,9 @@ class LocationMarker extends Component {
           lng: _.get(this.props, "lng", 0)
         }}
       >
-        {this.renderInfoBox()}
+        {
+          // this.renderInfoBox()
+        }
       </Marker>
     );
   }
