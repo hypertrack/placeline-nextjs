@@ -15,7 +15,10 @@ class RoutePolyline extends Component {
     if (_.get(polyline, "length", 0) > 0) {
       for (let i = 0; i < polyline.length; i++) {
         const coordinates = polyline[i];
-        path.push({ lat: coordinates[1], lng: coordinates[0] });
+        path.push({
+          lat: _.get(coordinates, "[1]", 0),
+          lng: _.get(coordinates, "[0]", 0)
+        });
       }
     }
 
@@ -39,8 +42,8 @@ class RoutePolyline extends Component {
                 scale: 2
               }}
               position={{
-                lat: polyline[polyline.length - 1][1],
-                lng: polyline[polyline.length - 1][0]
+                lat: _.get(polyline, "[polyline.length - 1][1]", 0),
+                lng: _.get(polyline, "[polyline.length - 1][0]", 0)
               }}
             >
               <div />
@@ -52,8 +55,8 @@ class RoutePolyline extends Component {
                 ""
               )}`}
               defaultCenter={{
-                lat: polyline[polyline.length - 1][1],
-                lng: polyline[polyline.length - 1][0]
+                lat: _.get(polyline, "[polyline.length - 1][1]", 0),
+                lng: _.get(polyline, "[polyline.length - 1][0]", 0)
               }}
               radius={_.get(this.props, "trip.destination.radius", 30)}
               options={{

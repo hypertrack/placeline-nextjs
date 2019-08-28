@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Marker } from "react-google-maps";
 const { InfoBox } = require("react-google-maps/lib/components/addons/InfoBox");
 import Router from "next/router";
+import _ from "lodash";
 
 import { getDeviceColor } from "../common/devices";
 
@@ -46,8 +47,8 @@ class LocationMarker extends Component {
           }
         }}
         position={{
-          lat: this.props.lat,
-          lng: this.props.lng
+          lat: _.get(this.props, "lat", 0),
+          lng: _.get(this.props, "lng", 0)
         }}
       >
         {this.renderInfoBox()}

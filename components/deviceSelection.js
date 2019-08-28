@@ -32,7 +32,9 @@ class DeviceSelection extends React.Component {
 
   render() {
     const StyledList = styled(List)`
-      min-height: 100vh;
+      height: 100vh;
+      max-height: 100vh !important;
+      overflow: scroll;
       padding: 12px;
     `;
 
@@ -42,7 +44,6 @@ class DeviceSelection extends React.Component {
           itemLayout="vertical"
           size="large"
           dataSource={_.get(this.props, "devices", [])}
-          header={<div>Tracked devices ...</div>}
           renderItem={item => (
             <List.Item
               actions={[

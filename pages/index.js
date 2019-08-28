@@ -94,29 +94,31 @@ class Index extends React.Component {
   updateTripStatus(i, tripUpdate) {
     let tripsState = this.state.trips;
 
-    // update trips without new Trips API call
-    tripsState[i] = {
-      ...tripsState[i],
-      status:
-        tripUpdate.data.value === "completed"
-          ? "completed"
-          : tripsState[i].status,
-      summary:
-        tripUpdate.data.value === "completed"
-          ? tripUpdate.data.summary
-          : tripsState[i].summary,
-      estimate: {
-        arrive_at:
-          tripUpdate.data.value === "delayed"
-            ? tripUpdate.data.arrive_at
-            : tripsState[i].estimate.arrive_at
-      }
-    };
+    if (_.get(tripsState, "[i]", false)) {
+      // update trips without new Trips API call
+      tripsState[i] = {
+        ...tripsState[i],
+        status:
+          tripUpdate.data.value === "completed"
+            ? "completed"
+            : tripsState[i].status,
+        summary:
+          tripUpdate.data.value === "completed"
+            ? tripUpdate.data.summary
+            : tripsState[i].summary,
+        estimate: {
+          arrive_at:
+            tripUpdate.data.value === "delayed"
+              ? tripUpdate.data.arrive_at
+              : tripsState[i].estimate.arrive_at
+        }
+      };
 
-    // likely going to change: only manage active trips
-    this.setState({
-      trips: tripsState.filter(trip => trip.status === "active")
-    });
+      // likely going to change: only manage active trips
+      this.setState({
+        trips: tripsState.filter(trip => trip.status === "active")
+      });
+    }
   }
 
   showNotification(text, device) {

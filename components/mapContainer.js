@@ -5,6 +5,7 @@ import {
   GoogleMap,
   Circle
 } from "react-google-maps";
+import _ from "lodash";
 
 import SegmentPolyline from "./segmentPolyline";
 import RoutePolyline from "./routePolyline";
@@ -56,11 +57,14 @@ class MapContainer extends Component {
       this.props.segments.map(segment => {
         if (segment.polyline && segment.polyline.length > 0) {
           for (let i = 0; i < segment.polyline.length; i++) {
-            if (segment.polyline[i][1] && segment.polyline[i][0]) {
+            if (
+              _.get(segment, "polyline[i][1]", false) &&
+              _.get(segment, "polyline[i][0]", false)
+            ) {
               bounds.extend(
                 new google.maps.LatLng(
-                  segment.polyline[i][1],
-                  segment.polyline[i][0]
+                  _.get(segment, "polyline[i][1]", 0),
+                  _.get(segment, "polyline[i][0]", 0)
                 )
               );
             }
@@ -74,9 +78,15 @@ class MapContainer extends Component {
         const polyline = _.get(trip, "estimate.route.polyline.coordinates");
         if (polyline && polyline.length > 0) {
           for (let i = 0; i < polyline.length; i++) {
-            if (polyline[i][1] && polyline[i][0]) {
+            if (
+              _.get(polyline, "[i][1]", false) &&
+              _.get(polyline, "[i][0]", false)
+            ) {
               bounds.extend(
-                new google.maps.LatLng(polyline[i][1], polyline[i][0])
+                new google.maps.LatLng(
+                  _.get(polyline, "[i][1]", 0),
+                  _.get(polyline, "[i][0]", 0)
+                )
               );
             }
           }
@@ -118,12 +128,12 @@ class MapContainer extends Component {
     }
 
     return this.props.devices.map((device, i) => (
-      <div>
+      <div key={`device-${device.device_id}-${i}`}>
         <Circle
           key={`device-${_.get(device, "device_id", "")}`}
           defaultCenter={{
-            lat: _.get(device, "location.geometry.coordinates[1]"),
-            lng: _.get(device, "location.geometry.coordinates[0]")
+            lat: _.get(device, "location.geometry.coordinates[1]", 0),
+            lng: _.get(device, "location.geometry.coordinates[0]", 0)
           }}
           radius={_.get(device, "location.accuracy", 30)}
           options={{
@@ -192,8 +202,8 @@ class MapContainer extends Component {
                 <Circle
                   key={`geofence-${i}-${trip.trip_id}`}
                   defaultCenter={{
-                    lat: parseFloat(fence.geometry.coordinates[1]),
-                    lng: parseFloat(fence.geometry.coordinates[0])
+                    lat: _.get(fence, "geometry.coordinates[1]", 0),
+                    lng: _.get(fence, "geometry.coordinates[0]", 0)
                   }}
                   radius={fence.radius || 30}
                   options={{
