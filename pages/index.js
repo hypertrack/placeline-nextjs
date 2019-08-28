@@ -1,4 +1,4 @@
-import { notification, Layout } from "antd";
+import { Layout } from "antd";
 import io from "socket.io-client";
 import _ from "lodash";
 import axios from "axios";
@@ -121,18 +121,6 @@ class Index extends React.Component {
     }
   }
 
-  showNotification(text, device) {
-    const deviceName = device
-      ? _.get(device, "device_info.name", "")
-      : "unnamed device";
-
-    notification.success({
-      message: `${text} for ${deviceName}`,
-      duration: 2,
-      placement: "bottomRight"
-    });
-  }
-
   subscribeToUdpates() {
     this.socket = io(process.env.SERVER_URL);
 
@@ -142,7 +130,6 @@ class Index extends React.Component {
         location.device_id
       );
 
-      this.showNotification("Updated location", device);
       this.updateDeviceLocation(i, location);
     });
 
@@ -152,7 +139,6 @@ class Index extends React.Component {
         deviceStatus.device_id
       );
 
-      this.showNotification("Updated device status", device);
       this.updateDeviceStatus(i, deviceStatus);
     });
 
@@ -162,7 +148,6 @@ class Index extends React.Component {
         battery.device_id
       );
 
-      this.showNotification("Updated battery status", device);
       this.updateDeviceBattery(i, battery);
     });
 
@@ -173,7 +158,6 @@ class Index extends React.Component {
         tripUpdate.device_id
       );
 
-      this.showNotification("Updated trip status", device);
       this.updateTripStatus(i, tripUpdate);
     });
   }

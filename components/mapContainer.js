@@ -13,10 +13,6 @@ import LocationMarker from "./locationMarker";
 import PlaceMarker from "./placeMarker";
 
 class MapContainer extends Component {
-  componentDidUpdate() {
-    this.map.fitBounds(this.getBounds());
-  }
-
   componentDidMount() {
     this.map.fitBounds(this.getBounds());
   }
