@@ -24,7 +24,7 @@ class RoutePolyline extends Component {
 
     return (
       <div>
-        {polyline.length > 0 && (
+        {polyline && polyline.length > 0 && (
           <div>
             <MarkerWithLabel
               labelAnchor={{ x: 11, y: 18 }}
@@ -42,8 +42,8 @@ class RoutePolyline extends Component {
                 scale: 2
               }}
               position={{
-                lat: _.get(polyline, "[polyline.length - 1][1]", 0),
-                lng: _.get(polyline, "[polyline.length - 1][0]", 0)
+                lat: _.get(polyline, `[${polyline.length - 1}][1]`, 0),
+                lng: _.get(polyline, `[${polyline.length - 1}][0]`, 0)
               }}
             >
               <div />
@@ -55,8 +55,8 @@ class RoutePolyline extends Component {
                 ""
               )}`}
               defaultCenter={{
-                lat: _.get(polyline, "[polyline.length - 1][1]", 0),
-                lng: _.get(polyline, "[polyline.length - 1][0]", 0)
+                lat: _.get(polyline, `[${polyline.length - 1}][1]`, 0),
+                lng: _.get(polyline, `[${polyline.length - 1}][0]`, 0)
               }}
               radius={_.get(this.props, "trip.destination.radius", 30)}
               options={{

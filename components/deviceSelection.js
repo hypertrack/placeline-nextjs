@@ -7,15 +7,6 @@ import PlaceSelection from "./placeSelection";
 import { getDeviceColor } from "../common/devices";
 
 class DeviceSelection extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      filterText: "",
-      filteredDevices: []
-    };
-  }
-
   handleChange(item) {
     this.props.onSelect();
     Router.push(
@@ -25,34 +16,19 @@ class DeviceSelection extends React.Component {
     );
   }
 
-  getTripAmount(device) {
+  getTripAmount(device_id) {
     const { trips } = this.props;
-    let tripAmount = 0;
+    let activeTrips = 0,
+      completedTrips = 0;
 
     for (let i = 0; i < trips.length; i++) {
       const trip = trips[i];
-      if (trip.device_id === device.device_id) {
-        tripAmount++;
+      if (trip.device_id === device_id) {
+        trip.status === "completed" ? completedTrips++ : activeTrips++;
       }
     }
 
-    return tripAmount;
-  }
-
-  filterDevices(filterText) {
-    this.setState({
-      filterText,
-      filteredDevices: this.props.devices.filter(device => {
-        return (
-          _.defaultTo(_.get(device, "device_info.name"), "")
-            .toLowerCase()
-            .includes(filterText) ||
-          _.defaultTo(_.get(device, "device_id"), "")
-            .toLowerCase()
-            .includes(filterText)
-        );
-      })
-    });
+    return { activeTrips, completedTrips };
   }
 
   render() {
@@ -66,16 +42,16 @@ class DeviceSelection extends React.Component {
     const { Search } = Input;
 
     const devices =
-      this.state.filterText === ""
+      this.props.filterText === ""
         ? this.props.devices
-        : this.state.filteredDevices;
+        : this.props.filteredDevices;
 
     return (
       <div>
         <Search
           placeholder="Search for device ID or name ..."
-          onChange={e => this.filterDevices(e.target.value)}
-          value={this.state.filterText}
+          onChange={e => this.props.filterDevices(e.target.value)}
+          value={this.props.filterText}
         />
         <StyledList
           itemLayout="vertical"
@@ -117,9 +93,13 @@ class DeviceSelection extends React.Component {
                   </a>
                 }
                 description={
-                  this.props.tripsLoading || this.getTripAmount(item) < 1
-                    ? ""
-                    : `${this.getTripAmount(item)} active trip(s)`
+                  this.props.tripsLoading
+                    ? "loading trips ..."
+                    : `${
+                        this.getTripAmount(item.device_id).activeTrips
+                      } active trip(s) | ${
+                        this.getTripAmount(item.device_id).completedTrips
+                      } completed trip(s)`
                 }
               />
               {`Device ID: ${_.get(item, "device_id", "")}`}

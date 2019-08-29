@@ -398,6 +398,7 @@ class Placeline extends React.Component {
         </Sider>
         <Content style={{ padding: "0" }}>
           <Map
+            loading={this.state.loading}
             segments={currentSummaries.segments}
             selectedSegments={this.state.selectedSummaries}
             onSelection={i => this.onSegmentSelect(i)}

@@ -12,8 +12,11 @@ class Index extends React.Component {
 
     this.state = {
       devices: {},
+      filterText: "",
+      filteredDevices: [],
       places: [],
       trips: {},
+      filteredTrips: [],
       loading: true,
       devicesLoading: true,
       tripsLoading: true
@@ -27,6 +30,22 @@ class Index extends React.Component {
   onDeviceSelect() {
     this.setState({
       loading: true
+    });
+  }
+
+  filterDevices(filterText) {
+    this.setState({
+      filterText,
+      filteredDevices: _.toArray(this.state.devices).filter(device => {
+        return (
+          _.defaultTo(_.get(device, "device_info.name"), "")
+            .toLowerCase()
+            .includes(filterText.toLowerCase()) ||
+          _.defaultTo(_.get(device, "device_id"), "")
+            .toLowerCase()
+            .includes(filterText.toLowerCase())
+        );
+      })
     });
   }
 
@@ -99,7 +118,7 @@ class Index extends React.Component {
 
       // likely going to change: only handle active trips
       this.setState({
-        trips: _.pickBy(tripsState, val => val.status === "active")
+        trips: tripsState
       });
     }
   }
@@ -180,10 +199,7 @@ class Index extends React.Component {
     // get all trips created by the sample app
     const options = {
       method: "get",
-      url: `${process.env.SERVER_URL}/trips`,
-      params: {
-        status: "active"
-      }
+      url: `${process.env.SERVER_URL}/trips`
     };
 
     axios(options).then(resp => {
@@ -202,9 +218,6 @@ class Index extends React.Component {
   render() {
     const { Sider } = Layout;
 
-    const tripArr = _.toArray(this.state.trips);
-    const deviceArr = _.toArray(this.state.devices);
-
     return (
       <Layout>
         <Sider
@@ -215,16 +228,28 @@ class Index extends React.Component {
           style={{ minHeight: "100vh" }}
         >
           <DeviceSelection
-            devices={deviceArr}
+            devices={_.toArray(this.state.devices)}
             places={this.state.places}
             loading={this.state.loading}
-            trips={tripArr}
+            trips={_.toArray(this.state.trips)}
             devicesLoading={this.state.devicesLoading}
             tripsLoading={this.state.tripsLoading}
             onSelect={() => this.onDeviceSelect()}
+            filterText={this.state.filterText}
+            filteredDevices={this.state.filteredDevices}
+            filterDevices={e => this.filterDevices(e)}
           />
         </Sider>
-        <Map loading={this.state.loading} devices={deviceArr} trips={tripArr} />
+        <Map
+          loading={this.state.loading}
+          devices={
+            this.state.filterText === ""
+              ? this.state.devices
+              : this.state.filteredDevices
+          }
+          // only show active trips of filtered devices on map
+          trips={_.toArray(this.state.trips)}
+        />
         t
       </Layout>
     );

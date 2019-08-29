@@ -54,13 +54,13 @@ class MapContainer extends Component {
         if (segment.polyline && segment.polyline.length > 0) {
           for (let i = 0; i < segment.polyline.length; i++) {
             if (
-              _.get(segment, "polyline[i][1]", false) &&
-              _.get(segment, "polyline[i][0]", false)
+              _.get(segment, `polyline[${i}][1]`, false) &&
+              _.get(segment, `polyline[${i}][0]`, false)
             ) {
               bounds.extend(
                 new google.maps.LatLng(
-                  _.get(segment, "polyline[i][1]", 0),
-                  _.get(segment, "polyline[i][0]", 0)
+                  _.get(segment, `polyline[${i}][1]`, 0),
+                  _.get(segment, `polyline[${i}][0]`, 0)
                 )
               );
             }
@@ -225,7 +225,7 @@ class MapContainer extends Component {
         zoom={15}
         options={{
           styles: require("../static/map/GoogleMapStyles.json"),
-          disableDefaultUI: true,
+          disableDefaultUI: false,
           draggable: true,
           scaleControl: true,
           scrollwheel: true
