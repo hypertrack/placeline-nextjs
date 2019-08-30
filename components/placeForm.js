@@ -143,7 +143,7 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
               loading={loading}
               onClick={() => this.onClose(true)}
             >
-              Set
+              Save
             </Button>
           ]}
         >
@@ -167,19 +167,22 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
               </Form>
             </Col>
             <Col offset={4} span={10}>
-              <Map
-                places={[
-                  {
-                    label: "Home",
-                    ...this.state.home
-                  },
-                  {
-                    label: "Work",
-                    ...this.state.work
-                  }
-                ]}
-                height="450px"
-              />
+              {(this.state.home.address !== "" ||
+                this.state.work.address !== "") && (
+                <Map
+                  places={[
+                    {
+                      label: "Home",
+                      ...this.state.home
+                    },
+                    {
+                      label: "Work",
+                      ...this.state.work
+                    }
+                  ]}
+                  height="450px"
+                />
+              )}
             </Col>
           </Row>
         </Modal>

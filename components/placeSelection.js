@@ -10,21 +10,12 @@ class PlaceSelection extends React.Component {
     super(props);
 
     this.state = {
-      visible: false,
       loading: false
     };
   }
 
   saveFormRef = formRef => {
     this.formRef = formRef;
-  };
-
-  showModal = () => {
-    this.setState({ visible: true });
-  };
-
-  handleCancel = () => {
-    this.setState({ visible: false });
   };
 
   handleOk = async places => {
@@ -41,7 +32,8 @@ class PlaceSelection extends React.Component {
       });
     }
 
-    this.setState({ loading: false, visible: false });
+    this.setState({ loading: false });
+    this.props.showPlaceModal(null);
   };
 
   render() {
@@ -51,18 +43,20 @@ class PlaceSelection extends React.Component {
       <div>
         <a
           key={`show-places-${item.device_id}`}
-          onClick={() => this.showModal()}
+          onClick={() => this.props.showPlaceModal(item.device_id)}
         >
           <Icon type="setting" /> Places
         </a>
-        <PlaceForm
-          wrappedComponentRef={this.saveFormRef}
-          places={findPlacesByDeviceId(this.props.places, item.device_id)}
-          visible={this.state.visible}
-          loading={this.state.loading}
-          onCancel={this.handleCancel}
-          onOk={e => this.handleOk(e)}
-        />
+        {this.props.visibleModal === item.device_id && (
+          <PlaceForm
+            wrappedComponentRef={this.saveFormRef}
+            places={findPlacesByDeviceId(this.props.places, item.device_id)}
+            visible={this.props.visibleModal === item.device_id}
+            loading={this.state.loading}
+            onCancel={() => this.props.showPlaceModal(null)}
+            onOk={e => this.handleOk(e)}
+          />
+        )}
       </div>
     );
   }

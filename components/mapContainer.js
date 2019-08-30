@@ -17,6 +17,16 @@ class MapContainer extends Component {
     this.map.fitBounds(this.getBounds());
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      _.get(prevProps, "devics.length", 0) !==
+      _.get(this.props, "devices.length", 0)
+    ) {
+      // auto zoom if device list changes
+      this.map.fitBounds(this.getBounds());
+    }
+  }
+
   getBounds() {
     let bounds = new google.maps.LatLngBounds();
 
@@ -124,32 +134,17 @@ class MapContainer extends Component {
     }
 
     return _.toArray(this.props.devices).map((device, i) => (
-      <div key={`device-${device.device_id}-${i}`}>
-        <Circle
-          key={`device-${_.get(device, "device_id", "")}`}
-          defaultCenter={{
-            lat: _.get(device, "location.geometry.coordinates[1]", 0),
-            lng: _.get(device, "location.geometry.coordinates[0]", 0)
-          }}
-          radius={_.get(device, "location.accuracy", 30)}
-          options={{
-            strokeOpacity: 0,
-            fillColor: "#00ce5b",
-            fillOpacity: 0.24
-          }}
-        />
-        <LocationMarker
-          key={`location-${i}`}
-          offline={
-            _.get(device, "device_status.value", "") === "disconnected" ||
-            _.get(device, "device_status.value", "") === "inactive"
-          }
-          id={_.get(device, "device_id")}
-          name={_.get(device, "device_info.name")}
-          lat={_.get(device, "location.geometry.coordinates[1]")}
-          lng={_.get(device, "location.geometry.coordinates[0]")}
-        />
-      </div>
+      <LocationMarker
+        key={`location-${i}`}
+        offline={
+          _.get(device, "device_status.value", "") === "disconnected" ||
+          _.get(device, "device_status.value", "") === "inactive"
+        }
+        id={_.get(device, "device_id")}
+        name={_.get(device, "device_info.name")}
+        lat={_.get(device, "location.geometry.coordinates[1]")}
+        lng={_.get(device, "location.geometry.coordinates[0]")}
+      />
     ));
   }
 
@@ -235,7 +230,7 @@ class MapContainer extends Component {
           {this.renderActivitySegments()}
           {this.renderDevices()}
           {this.renderPlaces()}
-          {this.renderTrips()}
+          {/*this.renderTrips()*/}
         </Fragment>
       </GoogleMap>
     );

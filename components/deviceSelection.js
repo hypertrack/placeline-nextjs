@@ -4,9 +4,21 @@ import _ from "lodash";
 import Router from "next/router";
 
 import PlaceSelection from "./placeSelection";
-import { getDeviceColor } from "../common/devices";
+// import { getDeviceColor } from "../common/devices";
 
 class DeviceSelection extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      placeModal: null
+    };
+  }
+
+  showPlaceModal = placeModal => {
+    this.setState({ placeModal });
+  };
+
   handleChange(item) {
     this.props.onSelect();
     Router.push(
@@ -41,35 +53,31 @@ class DeviceSelection extends React.Component {
 
     const { Search } = Input;
 
-    const devices =
-      this.props.filterText === ""
-        ? this.props.devices
-        : this.props.filteredDevices;
-
     return (
-      <div>
+      <div style={{ margin: "24px" }}>
         <Search
           placeholder="Search for device ID or name ..."
           onChange={e => this.props.filterDevices(e.target.value)}
           value={this.props.filterText}
+          style={{ marginBottom: "24px" }}
         />
         <StyledList
           itemLayout="vertical"
           size="large"
-          dataSource={devices}
+          dataSource={
+            this.props.filterText === ""
+              ? this.props.devices
+              : this.props.filteredDevices
+          }
           renderItem={item => (
             <List.Item
               actions={[
-                this.props.devicesLoading ? (
-                  <a style={{ color: "grey" }}>
-                    <Icon type="setting" /> Places
-                  </a>
-                ) : (
-                  <PlaceSelection
-                    item={item}
-                    places={_.get(this.props, "places", [])}
-                  />
-                )
+                <PlaceSelection
+                  item={item}
+                  places={_.get(this.props, "places", [])}
+                  showPlaceModal={id => this.showPlaceModal(id)}
+                  visibleModal={this.state.placeModal}
+                />
               ]}
             >
               <List.Item.Meta
@@ -88,7 +96,7 @@ class DeviceSelection extends React.Component {
                 }
                 title={
                   <a onClick={() => this.handleChange(item)}>
-                    <Tag color={getDeviceColor(item.device_id)}>•</Tag>
+                    {/*<Tag color={getDeviceColor(item.device_id)}>•</Tag>*/}
                     {_.get(item, "device_info.name", "")}
                   </a>
                 }
@@ -102,7 +110,7 @@ class DeviceSelection extends React.Component {
                       } completed trip(s)`
                 }
               />
-              {`Device ID: ${_.get(item, "device_id", "")}`}
+              {_.get(item, "device_id", "")}
             </List.Item>
           )}
           loading={this.props.loading}

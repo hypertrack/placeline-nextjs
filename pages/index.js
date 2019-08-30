@@ -83,7 +83,7 @@ class Index extends React.Component {
         },
         value:
           deviceStatus.data.value === "active"
-            ? _.get(deviceStatus, "data.activity", "unknown_activity")
+            ? _.get(deviceStatus, "data.activity", "unknown")
             : deviceStatus.data.value
       }
     };
@@ -156,7 +156,7 @@ class Index extends React.Component {
           resp.data[i].device_status.value = _.get(
             resp.data[i].device_status,
             "data.activity",
-            "unknown_activity"
+            "unknown"
           );
         }
 
