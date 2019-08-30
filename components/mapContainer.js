@@ -13,102 +13,28 @@ import LocationMarker from "./locationMarker";
 import PlaceMarker from "./placeMarker";
 
 class MapContainer extends Component {
-  componentDidMount() {
-    this.map.fitBounds(this.getBounds());
-  }
-
-  componentDidUpdate(prevProps) {
-    if (
-      _.get(prevProps, "devics.length", 0) !==
-      _.get(this.props, "devices.length", 0)
-    ) {
-      // auto zoom if device list changes
-      this.map.fitBounds(this.getBounds());
-    }
-  }
-
-  getBounds() {
-    let bounds = new google.maps.LatLngBounds();
-
-    if (this.props.devices) {
-      this.props.devices.map(device => {
-        if (
-          _.get(device, "location.geometry.coordinates[1]", false) &&
-          _.get(device, "location.geometry.coordinates[0]", false)
-        ) {
-          bounds.extend(
-            new google.maps.LatLng(
-              _.get(device, "location.geometry.coordinates[1]", 0),
-              _.get(device, "location.geometry.coordinates[0]", 0)
-            )
-          );
-        }
-      });
-    }
-
-    if (this.props.places) {
-      this.props.places.map(place => {
-        if (Object.keys(place.coordinates).length > 1) {
-          bounds.extend(
-            new google.maps.LatLng(
-              _.get(place, "coordinates.lat", 0),
-              _.get(place, "coordinates.lng", 0)
-            )
-          );
-        }
-      });
-    }
-
-    if (this.props.segments) {
-      this.props.segments.map(segment => {
-        if (segment.polyline && segment.polyline.length > 0) {
-          for (let i = 0; i < segment.polyline.length; i++) {
-            if (
-              _.get(segment, `polyline[${i}][1]`, false) &&
-              _.get(segment, `polyline[${i}][0]`, false)
-            ) {
-              bounds.extend(
-                new google.maps.LatLng(
-                  _.get(segment, `polyline[${i}][1]`, 0),
-                  _.get(segment, `polyline[${i}][0]`, 0)
-                )
-              );
-            }
-          }
-        }
-      });
-    }
-
-    if (this.props.trips) {
-      this.props.trips.map(trip => {
-        const polyline = _.get(trip, "estimate.route.polyline.coordinates");
-        if (polyline && polyline.length > 0) {
-          for (let i = 0; i < polyline.length; i++) {
-            if (
-              _.get(polyline, "[i][1]", false) &&
-              _.get(polyline, "[i][0]", false)
-            ) {
-              bounds.extend(
-                new google.maps.LatLng(
-                  _.get(polyline, "[i][1]", 0),
-                  _.get(polyline, "[i][0]", 0)
-                )
-              );
-            }
-          }
-        }
-      });
-    }
-
-    return bounds;
-  }
-
-  renderActivitySegments() {
+  renderActivitySegments(bounds) {
     const elems = [];
 
     if (_.get(this.props.segments, "length", 0) > 0) {
       this.props.segments.map((segment, i) => {
         if (segment) {
+          if (segment.polyline && segment.polyline.length > 0) {
+            for (let i = 0; i < segment.polyline.length; i++) {
+              if (
+                _.get(segment, `polyline[${i}][1]`, false) &&
+                _.get(segment, `polyline[${i}][0]`, false)
+              ) {
+                bounds.extend(
+                  new google.maps.LatLng(
+                    _.get(segment, `polyline[${i}][1]`, 0),
+                    _.get(segment, `polyline[${i}][0]`, 0)
+                  )
+                );
+              }
+            }
+          }
+
           elems.push(
             <SegmentPolyline
               segment={segment}
@@ -128,27 +54,40 @@ class MapContainer extends Component {
     return elems;
   }
 
-  renderDevices() {
+  renderDevices(bounds) {
     if (_.get(this.props, "devices.length", 0) === 0) {
       return;
     }
 
-    return this.props.devices.map((device, i) => (
-      <LocationMarker
-        key={`location-${i}`}
-        offline={
-          _.get(device, "device_status.value", "") === "disconnected" ||
-          _.get(device, "device_status.value", "") === "inactive"
-        }
-        id={_.get(device, "device_id")}
-        name={_.get(device, "device_info.name")}
-        lat={_.get(device, "location.geometry.coordinates[1]")}
-        lng={_.get(device, "location.geometry.coordinates[0]")}
-      />
-    ));
+    return this.props.devices.map((device, i) => {
+      if (
+        _.get(device, "location.geometry.coordinates[1]", false) &&
+        _.get(device, "location.geometry.coordinates[0]", false)
+      ) {
+        bounds.extend(
+          new google.maps.LatLng(
+            _.get(device, "location.geometry.coordinates[1]", 0),
+            _.get(device, "location.geometry.coordinates[0]", 0)
+          )
+        );
+      }
+      return (
+        <LocationMarker
+          key={`location-${i}`}
+          offline={
+            _.get(device, "device_status.value", "") === "disconnected" ||
+            _.get(device, "device_status.value", "") === "inactive"
+          }
+          id={_.get(device, "device_id")}
+          name={_.get(device, "device_info.name")}
+          lat={_.get(device, "location.geometry.coordinates[1]")}
+          lng={_.get(device, "location.geometry.coordinates[0]")}
+        />
+      );
+    });
   }
 
-  renderPlaces() {
+  renderPlaces(bounds) {
     if (!this.props.places || this.props.places.length === 0) {
       return;
     }
@@ -158,6 +97,13 @@ class MapContainer extends Component {
       if (Object.keys(place.coordinates).length === 0) {
         return;
       }
+
+      bounds.extend(
+        new google.maps.LatLng(
+          _.get(place, "coordinates.lat", 0),
+          _.get(place, "coordinates.lng", 0)
+        )
+      );
 
       return (
         <PlaceMarker
@@ -170,12 +116,29 @@ class MapContainer extends Component {
     });
   }
 
-  renderTrips() {
+  renderTrips(bounds) {
     const elems = [];
 
     if (_.get(this.props.trips, "length", 0) > 0) {
       this.props.trips.map((trip, i) => {
         if (trip) {
+          const polyline = _.get(trip, "estimate.route.polyline.coordinates");
+          if (polyline && polyline.length > 0) {
+            for (let i = 0; i < polyline.length; i++) {
+              if (
+                _.get(polyline, "[i][1]", false) &&
+                _.get(polyline, "[i][0]", false)
+              ) {
+                bounds.extend(
+                  new google.maps.LatLng(
+                    _.get(polyline, "[i][1]", 0),
+                    _.get(polyline, "[i][0]", 0)
+                  )
+                );
+              }
+            }
+          }
+
           elems.push(
             <RoutePolyline
               trip={trip}
@@ -214,9 +177,11 @@ class MapContainer extends Component {
   }
 
   render() {
+    const bounds = new window.google.maps.LatLngBounds();
+
     return (
       <GoogleMap
-        ref={elem => (this.map = elem)}
+        ref={map => map && map.fitBounds(bounds)}
         zoom={15}
         options={{
           styles: require("../static/map/GoogleMapStyles.json"),
@@ -227,10 +192,10 @@ class MapContainer extends Component {
         }}
       >
         <Fragment>
-          {this.renderActivitySegments()}
-          {this.renderDevices()}
-          {this.renderPlaces()}
-          {/*this.renderTrips()*/}
+          {this.renderActivitySegments(bounds)}
+          {this.renderDevices(bounds)}
+          {this.renderPlaces(bounds)}
+          {this.renderTrips(bounds)}
         </Fragment>
       </GoogleMap>
     );
