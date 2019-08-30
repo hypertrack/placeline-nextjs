@@ -3,7 +3,6 @@ import _ from "lodash";
 import axios from "axios";
 
 import PlaceForm from "./placeForm";
-import { findPlacesByDeviceId } from "../common/places";
 
 class PlaceSelection extends React.Component {
   constructor(props) {
@@ -49,8 +48,9 @@ class PlaceSelection extends React.Component {
         </a>
         {this.props.visibleModal === item.device_id && (
           <PlaceForm
+            deviceName={_.get(item, "device_info.name", item.device_id)}
             wrappedComponentRef={this.saveFormRef}
-            places={findPlacesByDeviceId(this.props.places, item.device_id)}
+            places={this.props.places}
             visible={this.props.visibleModal === item.device_id}
             loading={this.state.loading}
             onCancel={() => this.props.showPlaceModal(null)}

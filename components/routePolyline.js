@@ -5,11 +5,13 @@ const {
 } = require("react-google-maps/lib/components/addons/MarkerWithLabel");
 import _ from "lodash";
 
-import { getDeviceColor } from "../common/devices";
+import { getDeviceColor } from "../common/helper";
 
 class RoutePolyline extends Component {
-  render() {
-    const polyline = _.get(this.props, "route.polyline.coordinates");
+  constructor(props) {
+    super(props);
+
+    const polyline = _.get(props, "route.polyline.coordinates");
     let path = [];
 
     if (_.get(polyline, "length", 0) > 0) {
@@ -22,6 +24,12 @@ class RoutePolyline extends Component {
       }
     }
 
+    this.state = {
+      path
+    };
+  }
+
+  render() {
     return (
       <div>
         {polyline && polyline.length > 0 && (
@@ -68,7 +76,7 @@ class RoutePolyline extends Component {
           </div>
         )}
         <Polyline
-          path={path}
+          path={this.state.path}
           geodesic={true}
           options={{
             strokeColor: getDeviceColor(

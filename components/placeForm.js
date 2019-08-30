@@ -3,7 +3,6 @@ import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
 
 import LocationSearch from "./locationSearch";
 
-import { findPlaceByLabel } from "../common/places";
 import Map from "./map";
 
 const PlaceForm = Form.create({ name: "form_in_modal" })(
@@ -11,8 +10,8 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
     constructor(props) {
       super(props);
 
-      const homePlace = findPlaceByLabel(this.props.places, "home");
-      const workPlace = findPlaceByLabel(this.props.places, "work");
+      const homePlace = _.get(this.props, "places.home");
+      const workPlace = _.get(this.props, "places.work");
 
       this.state = {
         home: {
@@ -129,7 +128,7 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
       return (
         <Modal
           visible={visible}
-          title="Set Places"
+          title={`Set places for ${this.props.deviceName}`}
           okText="Set"
           onCancel={() => this.onClose(false)}
           onOk={() => this.onClose(true)}

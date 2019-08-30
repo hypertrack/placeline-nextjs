@@ -1,5 +1,4 @@
 import { Layout } from "antd";
-import io from "socket.io-client";
 import _ from "lodash";
 import axios from "axios";
 
@@ -14,8 +13,9 @@ class Index extends React.Component {
       devices: {},
       filterText: "",
       filteredDevices: [],
-      places: [],
+      placesPerDevice: {},
       trips: {},
+      tripsPerDevice: {},
       filteredTrips: [],
       loading: true,
       devicesLoading: true,
@@ -49,96 +49,6 @@ class Index extends React.Component {
     });
   }
 
-  updateDeviceLocation(id, location) {
-    let { devices } = this.state;
-
-    // update device without new Devices API call
-    devices[id] = {
-      ...devices[id],
-      location: {
-        speed: location.data.speed,
-        accuracy: location.data.accuracy,
-        bearing: location.data.bearing,
-        geometry: location.data.location,
-        recorded_at: location.recorded_at
-      }
-    };
-
-    this.setState({
-      devices
-    });
-  }
-
-  updateDeviceStatus(id, deviceStatus) {
-    let { devices } = this.state;
-
-    // update device without new Devices API call
-    devices[id] = {
-      ...devices[id],
-      device_status: {
-        data: {
-          recorded_at: deviceStatus.recorded_at,
-          activity: deviceStatus.data.activity,
-          reason: deviceStatus.data.reason
-        },
-        value:
-          deviceStatus.data.value === "active"
-            ? _.get(deviceStatus, "data.activity", "unknown")
-            : deviceStatus.data.value
-      }
-    };
-
-    this.setState({
-      devices
-    });
-  }
-
-  updateTripStatus(id, tripUpdate) {
-    let tripsState = this.state.trips;
-
-    if (_.get(tripsState, `[${id}]`, false)) {
-      // update trips without new Trips API call
-      tripsState[id] = {
-        ...tripsState[id],
-        status:
-          tripUpdate.data.value === "completed"
-            ? "completed"
-            : tripsState[id].status,
-        summary:
-          tripUpdate.data.value === "completed"
-            ? tripUpdate.data.summary
-            : tripsState[id].summary,
-        estimate: {
-          arrive_at:
-            tripUpdate.data.value === "delayed"
-              ? tripUpdate.data.arrive_at
-              : tripsState[id].estimate.arrive_at
-        }
-      };
-
-      // likely going to change: only handle active trips
-      this.setState({
-        trips: tripsState
-      });
-    }
-  }
-
-  subscribeToUdpates() {
-    this.socket = io(process.env.SERVER_URL);
-
-    this.socket.on("location", location => {
-      this.updateDeviceLocation(location.device_id, location);
-    });
-
-    this.socket.on("device_status", deviceStatus => {
-      this.updateDeviceStatus(deviceStatus.device_id, deviceStatus);
-    });
-
-    this.socket.on("trip", tripUpdate => {
-      this.updateTripStatus(tripUpdate.data.trip_id, tripUpdate);
-    });
-  }
-
   getDeviceList() {
     let devices = {};
 
@@ -169,8 +79,7 @@ class Index extends React.Component {
         loading: false
       });
 
-      // with known devices, subscribe to updates and get places
-      this.subscribeToUdpates();
+      // with known devices, get places
       this.getDevicePlaces();
     });
   }
@@ -183,8 +92,18 @@ class Index extends React.Component {
     };
 
     axios(options).then(resp => {
+      let placesPerDevice = {};
+      for (let i = 0; i < resp.data.length; i++) {
+        let place = resp.data[i];
+
+        placesPerDevice[place.device_id] =
+          placesPerDevice[place.device_id] || {};
+
+        placesPerDevice[place.device_id][place.label] = place;
+      }
+
       this.setState({
-        places: resp.data,
+        placesPerDevice,
         devicesLoading: false
       });
 
@@ -195,6 +114,7 @@ class Index extends React.Component {
 
   getTrips() {
     let trips = {};
+    let tripsPerDevice = {};
 
     // get all trips created by the sample app
     const options = {
@@ -204,12 +124,27 @@ class Index extends React.Component {
 
     axios(options).then(resp => {
       for (let i = 0; i < resp.data.length; i++) {
+        let trip = resp.data[i];
+
+        const { trip_id, device_id, status } = trip;
+
         // store in object
-        trips[resp.data[i].trip_id] = resp.data[i];
+        trips[trip_id] = trip;
+
+        // count completed and active trips
+        tripsPerDevice[device_id] = {
+          active:
+            _.get(tripsPerDevice, `[${device_id}].active`, 0) +
+            (status === "active" ? 1 : 0),
+          completed:
+            _.get(tripsPerDevice, `[${device_id}].completed`, 0) +
+            (status === "completed" ? 1 : 0)
+        };
       }
 
       this.setState({
         trips,
+        tripsPerDevice,
         tripsLoading: false
       });
     });
@@ -229,9 +164,9 @@ class Index extends React.Component {
         >
           <DeviceSelection
             devices={_.toArray(this.state.devices)}
-            places={this.state.places}
+            placesPerDevice={this.state.placesPerDevice}
             loading={this.state.loading}
-            trips={_.toArray(this.state.trips)}
+            tripsPerDevice={this.state.tripsPerDevice}
             devicesLoading={this.state.devicesLoading}
             tripsLoading={this.state.tripsLoading}
             onSelect={() => this.onDeviceSelect()}
@@ -247,8 +182,6 @@ class Index extends React.Component {
               ? this.state.devices
               : this.state.filteredDevices
           }
-          // only show active trips of filtered devices on map
-          trips={_.toArray(this.state.trips)}
         />
         t
       </Layout>

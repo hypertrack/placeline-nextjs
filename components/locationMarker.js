@@ -4,7 +4,7 @@ const { InfoBox } = require("react-google-maps/lib/components/addons/InfoBox");
 import Router from "next/router";
 import _ from "lodash";
 
-import { getDeviceColor } from "../common/devices";
+import { getDeviceColor } from "../common/helper";
 
 class LocationMarker extends Component {
   onInfoBoxClick() {

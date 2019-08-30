@@ -4,7 +4,6 @@ import _ from "lodash";
 import Router from "next/router";
 
 import PlaceSelection from "./placeSelection";
-// import { getDeviceColor } from "../common/devices";
 
 class DeviceSelection extends React.Component {
   constructor(props) {
@@ -28,21 +27,6 @@ class DeviceSelection extends React.Component {
     );
   }
 
-  getTripAmount(device_id) {
-    const { trips } = this.props;
-    let activeTrips = 0,
-      completedTrips = 0;
-
-    for (let i = 0; i < trips.length; i++) {
-      const trip = trips[i];
-      if (trip.device_id === device_id) {
-        trip.status === "completed" ? completedTrips++ : activeTrips++;
-      }
-    }
-
-    return { activeTrips, completedTrips };
-  }
-
   render() {
     const StyledList = styled(List)`
       height: 100vh;
@@ -60,6 +44,7 @@ class DeviceSelection extends React.Component {
           onChange={e => this.props.filterDevices(e.target.value)}
           value={this.props.filterText}
           style={{ marginBottom: "24px" }}
+          disabled={this.props.loading}
         />
         <StyledList
           itemLayout="vertical"
@@ -74,7 +59,11 @@ class DeviceSelection extends React.Component {
               actions={[
                 <PlaceSelection
                   item={item}
-                  places={_.get(this.props, "places", [])}
+                  places={_.get(
+                    this.props,
+                    `placesPerDevice[${item.device_id}]`,
+                    {}
+                  )}
                   showPlaceModal={id => this.showPlaceModal(id)}
                   visibleModal={this.state.placeModal}
                 />
@@ -96,18 +85,21 @@ class DeviceSelection extends React.Component {
                 }
                 title={
                   <a onClick={() => this.handleChange(item)}>
-                    {/*<Tag color={getDeviceColor(item.device_id)}>•</Tag>*/}
                     {_.get(item, "device_info.name", "")}
                   </a>
                 }
                 description={
                   this.props.tripsLoading
                     ? "loading trips ..."
-                    : `${
-                        this.getTripAmount(item.device_id).activeTrips
-                      } active trip(s) | ${
-                        this.getTripAmount(item.device_id).completedTrips
-                      } completed trip(s)`
+                    : `${_.get(
+                        this.props.tripsPerDevice,
+                        `[${item.device_id}].active`,
+                        0
+                      )} active trip(s) | ${_.get(
+                        this.props.tripsPerDevice,
+                        `[${item.device_id}].completed`,
+                        0
+                      )} completed trip(s)`
                 }
               />
               {_.get(item, "device_id", "")}
