@@ -29,8 +29,8 @@ class DeviceSelection extends React.Component {
 
   render() {
     const StyledList = styled(List)`
-      height: 100vh;
-      max-height: 100vh !important;
+      height: calc(100vh - 104px);
+      max-height: calc(100vh - 104px) !important;
       overflow: scroll;
       padding: 12px;
     `;
