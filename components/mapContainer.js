@@ -31,7 +31,7 @@ class MapContainer extends Component {
     let bounds = new google.maps.LatLngBounds();
 
     if (this.props.devices) {
-      _.toArray(this.props.devices).map(device => {
+      this.props.devices.map(device => {
         if (
           _.get(device, "location.geometry.coordinates[1]", false) &&
           _.get(device, "location.geometry.coordinates[0]", false)
@@ -129,11 +129,11 @@ class MapContainer extends Component {
   }
 
   renderDevices() {
-    if (!this.props.devices || Object.keys(this.props.devices).length === 0) {
+    if (_.get(this.props, "devices.length", 0) === 0) {
       return;
     }
 
-    return _.toArray(this.props.devices).map((device, i) => (
+    return this.props.devices.map((device, i) => (
       <LocationMarker
         key={`location-${i}`}
         offline={

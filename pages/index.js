@@ -10,7 +10,7 @@ class Index extends React.Component {
     super(props);
 
     this.state = {
-      devices: {},
+      devices: [],
       filterText: "",
       filteredDevices: [],
       placesPerDevice: {},
@@ -36,7 +36,7 @@ class Index extends React.Component {
   filterDevices(filterText) {
     this.setState({
       filterText,
-      filteredDevices: _.toArray(this.state.devices).filter(device => {
+      filteredDevices: this.state.devices.filter(device => {
         return (
           _.defaultTo(_.get(device, "device_info.name"), "")
             .toLowerCase()
@@ -50,7 +50,7 @@ class Index extends React.Component {
   }
 
   getDeviceList() {
-    let devices = {};
+    let devices = [];
 
     // get all devices
     const options = {
@@ -71,7 +71,7 @@ class Index extends React.Component {
         }
 
         // store in object
-        devices[resp.data[i].device_id] = resp.data[i];
+        devices.push(resp.data[i]);
       }
 
       this.setState({
@@ -163,7 +163,7 @@ class Index extends React.Component {
           style={{ minHeight: "100vh" }}
         >
           <DeviceSelection
-            devices={_.toArray(this.state.devices)}
+            devices={this.state.devices}
             placesPerDevice={this.state.placesPerDevice}
             loading={this.state.loading}
             tripsPerDevice={this.state.tripsPerDevice}
