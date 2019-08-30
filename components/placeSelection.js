@@ -36,15 +36,27 @@ class PlaceSelection extends React.Component {
   };
 
   render() {
-    const { item } = this.props;
+    const { item, places } = this.props;
+    const { home, work } = places;
+    let color = "#52c41a";
+    let icon = "check";
+    let text = "Places set";
+
+    // set color for fail or success
+    if (!home || !work) {
+      color = "#eb2f96";
+      icon = "setting";
+      text = "Places missing";
+    }
 
     return (
       <div>
         <a
           key={`show-places-${item.device_id}`}
           onClick={() => this.props.showPlaceModal(item.device_id)}
+          style={{ color }}
         >
-          <Icon type="setting" /> Places
+          <Icon type={icon} /> {text}
         </a>
         {this.props.visibleModal === item.device_id && (
           <PlaceForm

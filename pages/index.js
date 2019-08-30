@@ -17,8 +17,8 @@ class Index extends React.Component {
       trips: {},
       tripsPerDevice: {},
       filteredTrips: [],
-      loading: true,
       devicesLoading: true,
+      placesLoading: true,
       tripsLoading: true
     };
   }
@@ -29,7 +29,7 @@ class Index extends React.Component {
 
   onDeviceSelect() {
     this.setState({
-      loading: true
+      devicesLoading: true
     });
   }
 
@@ -76,7 +76,7 @@ class Index extends React.Component {
 
       this.setState({
         devices,
-        loading: false
+        devicesLoading: false
       });
 
       // with known devices, get places
@@ -104,7 +104,7 @@ class Index extends React.Component {
 
       this.setState({
         placesPerDevice,
-        devicesLoading: false
+        placesLoading: false
       });
 
       // with places and devices, get trips
@@ -165,9 +165,9 @@ class Index extends React.Component {
           <DeviceSelection
             devices={this.state.devices}
             placesPerDevice={this.state.placesPerDevice}
-            loading={this.state.loading}
             tripsPerDevice={this.state.tripsPerDevice}
             devicesLoading={this.state.devicesLoading}
+            placesLoading={this.state.placesLoading}
             tripsLoading={this.state.tripsLoading}
             onSelect={() => this.onDeviceSelect()}
             filterText={this.state.filterText}
@@ -176,7 +176,7 @@ class Index extends React.Component {
           />
         </Sider>
         <Map
-          loading={this.state.loading}
+          loading={this.state.devicesLoading}
           devices={
             this.state.filterText === ""
               ? this.state.devices

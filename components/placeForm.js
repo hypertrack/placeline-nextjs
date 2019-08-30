@@ -1,4 +1,4 @@
-import { Button, Modal, Form, Select, Row, Col } from "antd";
+import { Button, Modal, Form, Row, Col } from "antd";
 import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
 
 import LocationSearch from "./locationSearch";
@@ -134,9 +134,15 @@ const PlaceForm = Form.create({ name: "form_in_modal" })(
           onOk={() => this.onClose(true)}
           width="75%"
           footer={[
-            ,
             <Button
-              key="submit"
+              key={`${this.props.deviceName}-btn-cancel`}
+              loading={loading}
+              onClick={() => this.onClose(false)}
+            >
+              Cancel
+            </Button>,
+            <Button
+              key={`${this.props.deviceName}-btn-submit`}
               htmlType="submit"
               type="primary"
               loading={loading}

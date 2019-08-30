@@ -44,7 +44,7 @@ class DeviceSelection extends React.Component {
           onChange={e => this.props.filterDevices(e.target.value)}
           value={this.props.filterText}
           style={{ marginBottom: "24px" }}
-          disabled={this.props.loading}
+          disabled={this.props.devicesLoading}
         />
         <StyledList
           itemLayout="vertical"
@@ -57,16 +57,20 @@ class DeviceSelection extends React.Component {
           renderItem={item => (
             <List.Item
               actions={[
-                <PlaceSelection
-                  item={item}
-                  places={_.get(
-                    this.props,
-                    `placesPerDevice[${item.device_id}]`,
-                    {}
-                  )}
-                  showPlaceModal={id => this.showPlaceModal(id)}
-                  visibleModal={this.state.placeModal}
-                />
+                this.props.placesLoading ? (
+                  "loading places ..."
+                ) : (
+                  <PlaceSelection
+                    item={item}
+                    places={_.get(
+                      this.props,
+                      `placesPerDevice[${item.device_id}]`,
+                      {}
+                    )}
+                    showPlaceModal={id => this.showPlaceModal(id)}
+                    visibleModal={this.state.placeModal}
+                  />
+                )
               ]}
             >
               <List.Item.Meta
@@ -105,7 +109,7 @@ class DeviceSelection extends React.Component {
               {_.get(item, "device_id", "")}
             </List.Item>
           )}
-          loading={this.props.loading}
+          loading={this.props.devicesLoading}
         />
       </div>
     );
