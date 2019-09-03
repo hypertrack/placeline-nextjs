@@ -10,12 +10,15 @@
 
 A sample ReactJS/NextJS frontend application using the HyperTrack platform. It consumes the REST APIs and Socket.io streams from the [sample backend project](https://github.com/hypertrack/sample-backend-nodejs).
 
+<p align="center">
+  <img src="static/placeline.gif" />
+</p>
+
 ## Overview
 
 - [Sample Frontend Integration](#sample-frontend-integration)
   - [Overview](#overview)
   - [Features](#features)
-  - [Possibilities](#possibilities)
   - [How it works](#how-it-works)
   - [Requirements](#requirements)
   - [Installation and setup](#installation-and-setup)
@@ -36,21 +39,6 @@ A sample ReactJS/NextJS frontend application using the HyperTrack platform. It c
 - Store devices, trips, and all webhook records in MongoDB with Mongoose
 - Subscribe to Websocket on webhook arrival using Socket.io
 - Set home and work places for devices
-
-## Possibilities
-
-With the capability of this project, you can build web or mobile apps like Placeline:
-
-<p align="center">
-  <img src="static/placeline.gif" />
-</p>
-
-Examples of potential features include:
-
-- Track all devices associated with your HyperTrack account on a world map with updates as they come in
-- Map all active trips with start/end places and geofences
-- Display all completed trips on a Placeline (time/location/activity series) and review relevant ones in more detail
-- Create expense reports with pre-filled fields such as distance traveled, travel date/time, expenses based on distance and rate, and description based on start and end places
 
 ## How it works
 
