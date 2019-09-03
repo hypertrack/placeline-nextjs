@@ -11,6 +11,7 @@ import {
   Checkbox
 } from "antd";
 import moment from "moment";
+import _ from "lodash";
 
 import Map from "./map";
 
@@ -45,7 +46,11 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
 
           if (i === 0) {
             // set starting address in description
-            description = `Drive from ${segment.start_place} to `;
+            description = `Drive from ${_.get(
+              segment,
+              "start_place",
+              "A"
+            )} to `;
 
             // set starting date as date
             date = moment(segment.start_datetime);
@@ -53,7 +58,7 @@ const ExportForm = Form.create({ name: "form_in_modal" })(
 
           if (i === this.props.segments.length - 1) {
             // set end address in description
-            description += `${segment.end_place}`;
+            description += `${_.get(segment, "end_place", "B")}`;
           }
         }
       }

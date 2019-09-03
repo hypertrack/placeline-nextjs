@@ -3,6 +3,7 @@ import SVG from "react-inlinesvg";
 import { Timeline, Icon, Row, Col } from "antd";
 import moment from "moment";
 import styled from "styled-components";
+import _ from "lodash";
 
 class SegmentPlaceline extends Component {
   render() {
@@ -17,7 +18,11 @@ class SegmentPlaceline extends Component {
     let overview = "";
 
     if (segment.start_place && segment.end_place) {
-      description += `From ${segment.start_place} to ${segment.end_place}`;
+      description += `From ${_.get(segment, "start_place", "A")} to ${_.get(
+        segment,
+        "end_place",
+        "B"
+      )}`;
     }
 
     if (segment.duration > 0 || segment.steps > 0 || segment.distance > 0) {
