@@ -34,10 +34,8 @@ A sample ReactJS/NextJS frontend application using the HyperTrack platform. It c
 - Synchronize all existing devices and trips on startup
 - Receive webhooks and test locally with [Localtunnel](https://github.com/localtunnel/localtunnel)
 - Store devices, trips, and all webhook records in MongoDB with Mongoose
-- Auto-complete trips 2 minutes after destination arrival
-- Notify Websocket subscribers on webhook arrival using Socket.io
-- Send mobile device push notifications to Google's GCM and Apple's APN on webhook arrival
-- Set home and work places for devices (relevant for Placeline apps)
+- Subscribe to Websocket on webhook arrival using Socket.io
+- Set home and work places for devices
 
 ## Possibilities
 
