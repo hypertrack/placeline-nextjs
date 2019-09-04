@@ -131,15 +131,20 @@ class Index extends React.Component {
         // store in object
         trips[trip_id] = trip;
 
-        // count completed and active trips
-        tripsPerDevice[device_id] = {
-          active:
-            _.get(tripsPerDevice, `[${device_id}].active`, 0) +
-            (status === "active" ? 1 : 0),
-          completed:
-            _.get(tripsPerDevice, `[${device_id}].completed`, 0) +
-            (status === "completed" ? 1 : 0)
+        // check for existing array
+        let deviceTrips = _.get(tripsPerDevice, `[${device_id}]`) || {
+          active: [],
+          completed: []
         };
+
+        if (status === "completed") {
+          deviceTrips.completed.push(trip);
+        } else {
+          deviceTrips.active.push(trip);
+        }
+
+        // store completed and active trips
+        tripsPerDevice[device_id] = deviceTrips;
       }
 
       this.setState({

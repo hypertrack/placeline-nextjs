@@ -1,4 +1,4 @@
-import { Avatar, List, Icon, Input, Tag } from "antd";
+import { Avatar, List, Menu, Dropdown, Icon, Input } from "antd";
 import styled from "styled-components";
 import _ from "lodash";
 import Router from "next/router";
@@ -93,17 +93,51 @@ class DeviceSelection extends React.Component {
                   </a>
                 }
                 description={
-                  this.props.tripsLoading
-                    ? "loading trips ..."
-                    : `${_.get(
-                        this.props.tripsPerDevice,
-                        `[${item.device_id}].active`,
-                        0
-                      )} active trip(s) | ${_.get(
-                        this.props.tripsPerDevice,
-                        `[${item.device_id}].completed`,
-                        0
-                      )} completed trip(s)`
+                  this.props.tripsLoading ? (
+                    "loading trips ..."
+                  ) : (
+                    <Dropdown
+                      overlay={
+                        <Menu>
+                          {_.get(
+                            this.props.tripsPerDevice,
+                            `[${item.device_id}].active`,
+                            []
+                          ).map(trip => (
+                            <Menu.Item>
+                              <a
+                                key={`menu-trip-${trip.trip_id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={trip.views.embed_url}
+                              >
+                                Trip {trip.trip_id}
+                              </a>
+                            </Menu.Item>
+                          ))}
+                        </Menu>
+                      }
+                    >
+                      <div>
+                        <a className="ant-dropdown-link" href="#">
+                          <Icon type="down" />{" "}
+                          {_.get(
+                            this.props.tripsPerDevice,
+                            `[${item.device_id}].active.length`,
+                            0
+                          )}{" "}
+                          active trip(s)
+                        </a>{" "}
+                        |{" "}
+                        {_.get(
+                          this.props.tripsPerDevice,
+                          `[${item.device_id}].completed.length`,
+                          0
+                        )}{" "}
+                        completed trip(s)
+                      </div>
+                    </Dropdown>
+                  )
                 }
               />
               {_.get(item, "device_id", "")}

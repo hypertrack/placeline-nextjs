@@ -2,13 +2,13 @@
     <img src="https://www.hypertrack.com/green.eeca143346e01b96d600.svg" alt="HyperTrack logo" title="HyperTrack" align="right" height="40" />
 </a>
 
-# Sample Frontend Integration
+# Sample Frontend Integration: Placeline
 
 ![](https://img.shields.io/circleci/build/gh/hypertrack/sample-frontend-nextjs?style=flat-square)
 ![](https://img.shields.io/david/hypertrack/sample-frontend-nextjs?style=flat-square)
 ![](https://img.shields.io/github/license/hypertrack/sample-frontend-nextjs?style=flat-square)
 
-A sample ReactJS/NextJS frontend application using the HyperTrack platform. It consumes the REST APIs and Socket.io streams from the [sample backend project](https://github.com/hypertrack/sample-backend-nodejs).
+A sample ReactJS/NextJS frontend application using the HyperTrack platform. It consumes the REST APIs and Socket.io streams from the [sample backend project](https://github.com/hypertrack/sample-backend-nodejs). The purpuse of this application is to show device movement history in a Placeline view and to quickly submit expenses based on tracked driving segments.
 
 <p align="center">
   <img src="static/placeline.gif" />
@@ -16,7 +16,7 @@ A sample ReactJS/NextJS frontend application using the HyperTrack platform. It c
 
 ## Overview
 
-- [Sample Frontend Integration](#sample-frontend-integration)
+- [Sample Frontend Integration: Placeline](#sample-frontend-integration-placeline)
   - [Overview](#overview)
   - [Features](#features)
   - [How it works](#how-it-works)
