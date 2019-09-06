@@ -4,7 +4,7 @@ const { InfoBox } = require("react-google-maps/lib/components/addons/InfoBox");
 import Router from "next/router";
 import _ from "lodash";
 
-import { getDeviceColor } from "../common/helper";
+const randomColor = require("randomcolor");
 
 class LocationMarker extends Component {
   onInfoBoxClick() {
@@ -20,7 +20,10 @@ class LocationMarker extends Component {
       <InfoBox options={{ closeBoxURL: ``, enableEventPropagation: true }}>
         <div
           style={{
-            backgroundColor: getDeviceColor(this.props.id),
+            backgroundColor: randomColor({
+              luminosity: "dark",
+              seed: this.props.id
+            }),
             opacity: 0.95,
             padding: "3px 6px",
             borderRadius: "3px"

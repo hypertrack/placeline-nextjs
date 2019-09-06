@@ -19,8 +19,6 @@ import Map from "../components/map";
 import SegmentPlaceline from "../components/segmentPlaceline";
 import ExportConfirmation from "../components/exportConfirmation";
 
-import { shortenLargeNumber } from "../common/helper";
-
 const CALENDAR_FORMAT = "MM/DD/YY";
 const TIME_FORMAT = "h:mmA";
 
@@ -46,6 +44,17 @@ class Placeline extends React.Component {
 
   componentDidMount() {
     this.getSummaries();
+  }
+
+  shortenLargeNumber(num, digits, meters = true) {
+    if (num <= -1000 || num >= 1000) {
+      return {
+        number: +(num / 1000).toFixed(digits),
+        unit: meters ? "km" : "k"
+      };
+    }
+
+    return { number: num, unit: meters ? "m" : "steps" };
   }
 
   onDateChange(date) {
@@ -274,9 +283,11 @@ class Placeline extends React.Component {
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={
-                    shortenLargeNumber(currentSummaries.distance, 1).number
+                    this.shortenLargeNumber(currentSummaries.distance, 1).number
                   }
-                  suffix={shortenLargeNumber(currentSummaries.distance, 1).unit}
+                  suffix={
+                    this.shortenLargeNumber(currentSummaries.distance, 1).unit
+                  }
                 />
               </Row>
               <Row>
@@ -285,10 +296,12 @@ class Placeline extends React.Component {
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={
-                    shortenLargeNumber(currentSummaries.steps, 1, false).number
+                    this.shortenLargeNumber(currentSummaries.steps, 1, false)
+                      .number
                   }
                   suffix={
-                    shortenLargeNumber(currentSummaries.steps, 1, false).unit
+                    this.shortenLargeNumber(currentSummaries.steps, 1, false)
+                      .unit
                   }
                 />
               </Row>
@@ -304,8 +317,12 @@ class Placeline extends React.Component {
                   title="Drive"
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
-                  value={shortenLargeNumber(currentSummaries.drive, 1).number}
-                  suffix={shortenLargeNumber(currentSummaries.drive, 1).unit}
+                  value={
+                    this.shortenLargeNumber(currentSummaries.drive, 1).number
+                  }
+                  suffix={
+                    this.shortenLargeNumber(currentSummaries.drive, 1).unit
+                  }
                 />
               </Row>
               <Row>
@@ -313,8 +330,12 @@ class Placeline extends React.Component {
                   title="Cycle"
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
-                  value={shortenLargeNumber(currentSummaries.cycle, 1).number}
-                  suffix={shortenLargeNumber(currentSummaries.cycle, 1).unit}
+                  value={
+                    this.shortenLargeNumber(currentSummaries.cycle, 1).number
+                  }
+                  suffix={
+                    this.shortenLargeNumber(currentSummaries.cycle, 1).unit
+                  }
                 />
               </Row>
               <Row>
@@ -323,10 +344,12 @@ class Placeline extends React.Component {
                   style={{ padding: "10px" }}
                   groupSeparator={" "}
                   value={
-                    shortenLargeNumber(currentSummaries.walk, 1, false).number
+                    this.shortenLargeNumber(currentSummaries.walk, 1, false)
+                      .number
                   }
                   suffix={
-                    shortenLargeNumber(currentSummaries.walk, 1, false).unit
+                    this.shortenLargeNumber(currentSummaries.walk, 1, false)
+                      .unit
                   }
                 />
               </Row>

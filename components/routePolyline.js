@@ -5,7 +5,7 @@ const {
 } = require("react-google-maps/lib/components/addons/MarkerWithLabel");
 import _ from "lodash";
 
-import { getDeviceColor } from "../common/helper";
+const randomColor = require("randomcolor");
 
 class RoutePolyline extends Component {
   constructor(props) {
@@ -44,9 +44,10 @@ class RoutePolyline extends Component {
               }}
               icon={{
                 path: google.maps.SymbolPath.CIRCLE,
-                strokeColor: getDeviceColor(
-                  _.get(this.props, "trip.device_id", "")
-                ),
+                strokeColor: randomColor({
+                  luminosity: "dark",
+                  seed: _.get(this.props, "trip.device_id", "")
+                }),
                 scale: 2
               }}
               position={{
@@ -79,9 +80,10 @@ class RoutePolyline extends Component {
           path={this.state.path}
           geodesic={true}
           options={{
-            strokeColor: getDeviceColor(
-              _.get(this.props, "trip.device_id", "")
-            ),
+            strokeColor: randomColor({
+              luminosity: "dark",
+              seed: _.get(this.props, "trip.device_id", "")
+            }),
             strokeOpacity: 0.95,
             strokeWeight: 3
           }}
