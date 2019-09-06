@@ -4,9 +4,9 @@
 
 # Sample Frontend Integration: Placeline
 
-![](https://img.shields.io/circleci/build/gh/hypertrack/sample-frontend-nextjs?style=flat-square)
-![](https://img.shields.io/david/hypertrack/sample-frontend-nextjs?style=flat-square)
-![](https://img.shields.io/github/license/hypertrack/sample-frontend-nextjs?style=flat-square)
+![](https://img.shields.io/circleci/build/gh/hypertrack/sample-placeline-nextjs?style=flat-square)
+![](https://img.shields.io/david/hypertrack/sample-placeline-nextjs?style=flat-square)
+![](https://img.shields.io/github/license/hypertrack/sample-placeline-nextjs?style=flat-square)
 
 Placeline is a ReactJS/NextJS sample application to track the movement of your mobile workforce through the workday. Use this web app to track the live location, activity, device status and places visited by your business assets; track summaries for drives, steps, places and inactive hours; drill down to device locations organized in activity segments for each day, and export selected segments to 3rd party applications such as expense management software.
 
@@ -142,7 +142,7 @@ You need to enter all of these keys for the project to run successfully. Heroku 
 
 **Deploy this project now on Heroku:**
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hypertrack/sample-frontend-nextjs)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hypertrack/sample-placeline-nextjs)
 
 ## Backend
 
