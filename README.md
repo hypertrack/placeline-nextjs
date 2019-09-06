@@ -83,8 +83,7 @@ The goal of this project is to get you to a deployed integration in minutes. For
 
 - [ ] Set up a [HyperTrack account](https://dashboard.hypertrack.com/signup) and obtain your `AccountId` and `SecretKey` from the [Dashboard](https://dashboard.hypertrack.com/)
 - [ ] Integrate the HyperTrack SDK in your mobile application ([iOS](https://github.com/hypertrack/quickstart-ios), [Android](https://github.com/hypertrack/quickstart-android), or [React Native](https://github.com/hypertrack/quickstart-react-native)) or use our sample app to send location data ([iOS](https://github.com/hypertrack/live-app-ios) or [Android](https://github.com/hypertrack/live-app-android))
-- [ ] Set up a [Heroku account](https://signup.heroku.com/) for deployment
-- [ ] Set up a backend, providing accessible REST APIs. [Get a sample NodeJS backend here](https://github.com/hypertrack/backend-nodejs) or deploy it on Heroku right away: [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hypertrack/placeline-nextjs)
+- [ ] Set up a backend, providing accessible REST APIs. [Get a sample NodeJS backend here](https://github.com/hypertrack/backend-nodejs) or deploy it on Heroku right away: [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hypertrack/backend-nodejs)
 - [ ] Get a [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key) for the map component
 
 ## Installation and setup
