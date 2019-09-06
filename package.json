@@ -1,5 +1,5 @@
 {
-  "name": "sample-placeline-nextjs",
+  "name": "placeline-nextjs",
   "description": "Sample NextJS frontend integration for Placeline application",
   "version": "1.0.0",
   "main": "index.js",

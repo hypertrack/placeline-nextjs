@@ -15,11 +15,11 @@
       "value": ""
     },
     "SERVER_URL": {
-      "description": "Your backend server URL (without '/' at the end), for instance from https://github.com/hypertrack/sample-backend-nodejs deployment",
+      "description": "Your backend server URL (without '/' at the end), for instance from https://github.com/hypertrack/backend-nodejs deployment",
       "value": ""
     }
   },
-  "repository": "https://github.com/hypertrack/sample-frontend-nextjs",
+  "repository": "https://github.com/hypertrack/placeline-nextjs",
   "logo": "https://dashboard.hypertrack.com/assets/hypertrack-bw.svg",
   "keywords": [
     "sample",

@@ -4,13 +4,13 @@
 
 # Sample Frontend Integration: Placeline
 
-![](https://img.shields.io/circleci/build/gh/hypertrack/sample-placeline-nextjs?style=flat-square)
-![](https://img.shields.io/david/hypertrack/sample-placeline-nextjs?style=flat-square)
-![](https://img.shields.io/github/license/hypertrack/sample-placeline-nextjs?style=flat-square)
+![](https://img.shields.io/circleci/build/gh/hypertrack/placeline-nextjs?style=flat-square)
+![](https://img.shields.io/david/hypertrack/placeline-nextjs?style=flat-square)
+![](https://img.shields.io/github/license/hypertrack/placeline-nextjs?style=flat-square)
 
 Placeline is a ReactJS/NextJS sample application to track the movement of your mobile workforce through the workday. Use this web app to track the live location, activity, device status and places visited by your business assets; track summaries for drives, steps, places and inactive hours; drill down to device locations organized in activity segments for each day, and export selected segments to 3rd party applications such as expense management software.
 
-Placeline is built with HyperTrack APIs, SDKs, webhooks and associated helper libraries (like the [sample backend NodeJS project](https://github.com/hypertrack/sample-backend-nodejs)).
+Placeline is built with HyperTrack APIs, SDKs, webhooks and associated helper libraries (like the [sample backend NodeJS project](https://github.com/hypertrack/backend-nodejs)).
 
 <p align="center">
   <img src="static/placeline.gif" />
@@ -81,7 +81,7 @@ The project uses the NextJS and leverages file-system routing([read more](https:
 
 The goal of this project is to get you to a deployed integration in minutes. For this to work, you need to have:
 
-- [ ] A backend providing accessible REST APIs. [Get a sample NodeJS backend here](https://github.com/hypertrack/sample-backend-nodejs)
+- [ ] A backend providing accessible REST APIs. [Get a sample NodeJS backend here](https://github.com/hypertrack/backend-nodejs)
 - [ ] A Google Maps API Key for the map component. [Read more.](https://developers.google.com/maps/documentation/javascript/get-api-key)
 - [ ] A [Heroku account](https://signup.heroku.com/) for deployment
 
@@ -142,21 +142,21 @@ You need to enter all of these keys for the project to run successfully. Heroku 
 
 **Deploy this project now on Heroku:**
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hypertrack/sample-placeline-nextjs)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hypertrack/placeline-nextjs)
 
 ## Backend
 
-For this project to work, it needs to consume REST APIs to display the devices, places, and trips data. You can use the [NodeJS Sample Backend Integration](https://github.com/hypertrack/sample-backend-nodejs) project to spin up a backend that works out fo the box.
+For this project to work, it needs to consume REST APIs to display the devices, places, and trips data. You can use the [NodeJS Sample Backend Integration](https://github.com/hypertrack/backend-nodejs) project to spin up a backend that works out fo the box.
 
 Here are the API endpoints required:
 
-| Endpoint                           | Method | Schema                                                                                                      | Description                                                                                           |
-| ---------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| /devices                           | GET    | [Device](https://github.com/hypertrack/sample-backend-nodejs/blob/master/models/device.model.js)            | Load all devices (overview page)                                                                      |
-| /trips                             | GET    | [Trip](https://github.com/hypertrack/sample-backend-nodejs/blob/master/models/trip.model.js)                | Load all trips for all devices (overview page)                                                        |
-| /device-places                     | GET    | [DevicePlace](https://github.com/hypertrack/sample-backend-nodejs/blob/master/models/device-place.model.js) | Load all places for all devices (overview page)                                                       |
-| /device-places/{device_id}/{label} | POST   | [DevicePlace](https://github.com/hypertrack/sample-backend-nodejs/blob/master/models/device-place.model.js) | Save or update a place (`label` can be either `work` or `home`) for a selected device (overview page) |
-| /devices/{device_id}/trips         | GET    | [Trip](https://github.com/hypertrack/sample-backend-nodejs/blob/master/models/trip.model.js)                | Load all trips for a selected device (single device page)                                             |
+| Endpoint                           | Method | Schema                                                                                               | Description                                                                                           |
+| ---------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| /devices                           | GET    | [Device](https://github.com/hypertrack/backend-nodejs/blob/master/models/device.model.js)            | Load all devices (overview page)                                                                      |
+| /trips                             | GET    | [Trip](https://github.com/hypertrack/backend-nodejs/blob/master/models/trip.model.js)                | Load all trips for all devices (overview page)                                                        |
+| /device-places                     | GET    | [DevicePlace](https://github.com/hypertrack/backend-nodejs/blob/master/models/device-place.model.js) | Load all places for all devices (overview page)                                                       |
+| /device-places/{device_id}/{label} | POST   | [DevicePlace](https://github.com/hypertrack/backend-nodejs/blob/master/models/device-place.model.js) | Save or update a place (`label` can be either `work` or `home`) for a selected device (overview page) |
+| /devices/{device_id}/trips         | GET    | [Trip](https://github.com/hypertrack/backend-nodejs/blob/master/models/trip.model.js)                | Load all trips for a selected device (single device page)                                             |
 
 > _Note:_ Each endpoint gets prefixed with the `SERVER_URL` environmental variable.
 
@@ -168,7 +168,7 @@ Once the main page (_index.js_) is opened, it will load all devices, places, and
 
 ## Related
 
-This web application is built to work seamlessly with the [NodeJS Sample Backend Integration](https://github.com/hypertrack/sample-backend-nodejs) and the [Placeline scheduler](https://github.com/hypertrack/sample-scheduler-rabbitmq).
+This web application is built to work seamlessly with the [NodeJS Sample Backend Integration](https://github.com/hypertrack/backend-nodejs) and the [Placeline scheduler](https://github.com/hypertrack/sample-scheduler-rabbitmq).
 
 ## Credits
 
