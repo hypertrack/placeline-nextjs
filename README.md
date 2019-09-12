@@ -10,7 +10,9 @@
 
 Placeline is a ReactJS/NextJS sample application to track the movement of your mobile workforce through the workday. Use this web app to track the live location, activity, device status and places visited by your business assets; track summaries for drives, steps, places and inactive hours; drill down to device locations organized in activity segments for each day, and export selected segments to 3rd party applications such as expense management software.
 
-Placeline is built with HyperTrack APIs, SDKs, webhooks and associated helper libraries (like the [sample backend NodeJS project](https://github.com/hypertrack/backend-nodejs)).
+> 💬 [Check out this blog post](https://hypertrack.com/blog/2019/09/09/open-sourcing-placeline-a-sample-app-to-track-the-movement-history-of-your-workforce/) to learn why this is important, how HyperTrack is using it internally, and how it all ties together with the backend, the scheduler, and the HyperTrack platform.
+
+Placeline is built with HyperTrack APIs, SDKs, webhooks and associated helper libraries (like the [sample backend NodeJS/Express project](https://github.com/hypertrack/backend-nodejs)).
 
 <p align="center">
   <img src="static/placeline.gif" />
