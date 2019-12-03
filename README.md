@@ -138,8 +138,8 @@ This project is set up to be deployed to Heroku within seconds. You need a Herok
 
 Similar to the local setup, you need to have your keys ready before the deployment. The Heroku page will ask you for the following:
 
-- `GMAPS_KEY`: Your HyperTrack AccountId from the [HyperTrack Dashboard](https://dashboard.hypertrack.com/setup)
-- `SERVER_URL`: Your HyperTrack SecretKey from the [HyperTrack Dashboard](https://dashboard.hypertrack.com/setup)
+- `GMAPS_KEY`: Your own Google Map Key
+- `SERVER_URL`: Your server URL that provides the data
 
 You need to enter all of these keys for the project to run successfully. Heroku uses the input to pre-set the environmental variables for the deployment. You can change after the setup as well.
 
