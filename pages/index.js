@@ -1,194 +1,108 @@
-import { Layout } from "antd";
-import _ from "lodash";
-import axios from "axios";
+import Iframe from "react-iframe";
+import {
+  Layout,
+  Menu,
+  Breadcrumb,
+  Icon,
+  Divider,
+  Descriptions,
+  Badge
+} from "antd";
 
-import DeviceSelection from "../components/deviceSelection";
-import Map from "../components/map";
+const { SubMenu } = Menu;
+const { Header, Content, Sider } = Layout;
 
 class Index extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      devices: [],
-      filterText: "",
-      filteredDevices: [],
-      placesPerDevice: {},
-      trips: {},
-      tripsPerDevice: {},
-      filteredTrips: [],
-      devicesLoading: true,
-      placesLoading: true,
-      tripsLoading: true
-    };
-  }
-
-  componentDidMount() {
-    this.getDeviceList();
-  }
-
-  onDeviceSelect() {
-    this.setState({
-      devicesLoading: true
-    });
-  }
-
-  filterDevices(filterText) {
-    this.setState({
-      filterText,
-      filteredDevices: this.state.devices.filter(device => {
-        return (
-          _.defaultTo(_.get(device, "device_info.name"), "")
-            .toLowerCase()
-            .includes(filterText.toLowerCase()) ||
-          _.defaultTo(_.get(device, "device_id"), "")
-            .toLowerCase()
-            .includes(filterText.toLowerCase())
-        );
-      })
-    });
-  }
-
-  getDeviceList() {
-    let devices = [];
-
-    // get all devices
-    const options = {
-      method: "get",
-      url: `${process.env.SERVER_URL}/devices`
-    };
-
-    axios(options).then(resp => {
-      // update device_status
-      for (let i = 0; i < resp.data.length; i++) {
-        if (resp.data[i].device_status.value === "active") {
-          // This is a known bug
-          resp.data[i].device_status.value = _.get(
-            resp.data[i].device_status,
-            "data.activity",
-            "unknown"
-          );
-        }
-
-        // store in object
-        devices.push(resp.data[i]);
-      }
-
-      this.setState({
-        devices,
-        devicesLoading: false
-      });
-
-      // with known devices, get places
-      this.getDevicePlaces();
-    });
-  }
-
-  getDevicePlaces() {
-    // get all device places
-    const options = {
-      method: "get",
-      url: `${process.env.SERVER_URL}/device-places`
-    };
-
-    axios(options).then(resp => {
-      let placesPerDevice = {};
-      for (let i = 0; i < resp.data.length; i++) {
-        let place = resp.data[i];
-
-        placesPerDevice[place.device_id] =
-          placesPerDevice[place.device_id] || {};
-
-        placesPerDevice[place.device_id][place.label] = place;
-      }
-
-      this.setState({
-        placesPerDevice,
-        placesLoading: false
-      });
-
-      // with places and devices, get trips
-      this.getTrips();
-    });
-  }
-
-  getTrips() {
-    let trips = {};
-    let tripsPerDevice = {};
-
-    // get all trips created by the sample app
-    const options = {
-      method: "get",
-      url: `${process.env.SERVER_URL}/trips`
-    };
-
-    axios(options).then(resp => {
-      for (let i = 0; i < resp.data.length; i++) {
-        let trip = resp.data[i];
-
-        const { trip_id, device_id, status } = trip;
-
-        // store in object
-        trips[trip_id] = trip;
-
-        // check for existing array
-        let deviceTrips = _.get(tripsPerDevice, `[${device_id}]`) || {
-          active: [],
-          completed: []
-        };
-
-        if (status === "completed") {
-          deviceTrips.completed.push(trip);
-        } else {
-          deviceTrips.active.push(trip);
-        }
-
-        // store completed and active trips
-        tripsPerDevice[device_id] = deviceTrips;
-      }
-
-      this.setState({
-        trips,
-        tripsPerDevice,
-        tripsLoading: false
-      });
-    });
-  }
-
   render() {
-    const { Sider } = Layout;
-
     return (
-      <Layout>
-        <Sider
-          breakpoint="lg"
-          collapsedWidth="0"
-          theme="light"
-          width="30%"
-          style={{ minHeight: "100vh" }}
-        >
-          <DeviceSelection
-            devices={this.state.devices}
-            placesPerDevice={this.state.placesPerDevice}
-            tripsPerDevice={this.state.tripsPerDevice}
-            devicesLoading={this.state.devicesLoading}
-            placesLoading={this.state.placesLoading}
-            tripsLoading={this.state.tripsLoading}
-            onSelect={() => this.onDeviceSelect()}
-            filterText={this.state.filterText}
-            filteredDevices={this.state.filteredDevices}
-            filterDevices={e => this.filterDevices(e)}
+      <Layout style={{ height: "100vh" }}>
+        <Header className="header">
+          <div
+            className="logo"
+            style={{
+              width: "120px",
+              height: "31px",
+              background: "rgba(255, 255, 255, 0.2)",
+              margin: "16px 28px 16px 0",
+              float: "left"
+            }}
           />
-        </Sider>
-        <Map
-          loading={this.state.devicesLoading}
-          devices={
-            this.state.filterText === ""
-              ? this.state.devices
-              : this.state.filteredDevices
-          }
-        />
-        t
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            defaultSelectedKeys={["2"]}
+            style={{ lineHeight: "64px" }}
+          >
+            <Menu.Item key="2">Drivers</Menu.Item>
+            <Menu.Item key="3">Deliveries</Menu.Item>
+            <Menu.Item key="1">Recipients</Menu.Item>
+          </Menu>
+        </Header>
+        <Layout style={{ height: "100%" }}>
+          <Sider width={200} style={{ background: "#fff" }}>
+            <Menu
+              mode="inline"
+              defaultSelectedKeys={["1"]}
+              defaultOpenKeys={["sub1"]}
+              style={{ height: "100%", borderRight: 0 }}
+            >
+              <SubMenu
+                key="sub1"
+                title={
+                  <span>
+                    <Icon type="team" />
+                    United States
+                  </span>
+                }
+              >
+                <Menu.Item key="1">San Francisco</Menu.Item>
+                <Menu.Item key="2">Chicago</Menu.Item>
+                <Menu.Item key="3">New York</Menu.Item>
+                <Menu.Item key="4">Washington</Menu.Item>
+              </SubMenu>
+              <SubMenu
+                key="sub2"
+                title={
+                  <span>
+                    <Icon type="team" />
+                    India
+                  </span>
+                }
+              ></SubMenu>
+            </Menu>
+          </Sider>
+          <Layout style={{ padding: "0 24px 24px", height: "100%" }}>
+            <Breadcrumb style={{ margin: "16px 0" }}>
+              <Breadcrumb.Item>Fleet</Breadcrumb.Item>
+              <Breadcrumb.Item>United States</Breadcrumb.Item>
+              <Breadcrumb.Item>San Francisco</Breadcrumb.Item>
+            </Breadcrumb>
+            <Content
+              style={{
+                background: "#fff",
+                padding: 24,
+                margin: 0
+              }}
+            >
+              <Descriptions title="Fleet Overview" bordered>
+                <Descriptions.Item label="Local time">
+                  10:12 AM
+                </Descriptions.Item>
+                <Descriptions.Item label="Drivers">253</Descriptions.Item>
+                <Descriptions.Item label="Status">
+                  <Badge status="processing" text="Active" />
+                </Descriptions.Item>
+              </Descriptions>
+              <Divider>Live Tracking</Divider>
+              <Iframe
+                frameBorder="0"
+                width="100%"
+                height="450px"
+                url={`https://embed.hypertrack.com/devices?publishable_key=${process.env.HT_PUBLISHABLE_KEY}`}
+              />
+            </Content>
+          </Layout>
+        </Layout>
       </Layout>
     );
   }

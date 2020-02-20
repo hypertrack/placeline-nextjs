@@ -10,12 +10,8 @@
     }
   ],
   "env": {
-    "GMAPS_KEY": {
-      "description": "Your Google Maps Key from https://developers.google.com/maps/documentation/javascript/get-api-key",
-      "value": ""
-    },
-    "SERVER_URL": {
-      "description": "Your backend server URL (without '/' at the end), for instance from https://github.com/hypertrack/backend-nodejs deployment",
+    "HT_PUBLISHABLE_KEY": {
+      "description": "Your HyperTrack Publishable Key from https://dashboard.hypertrack.com/setup",
       "value": ""
     }
   },
@@ -27,7 +23,6 @@
     "placeline",
     "integration",
     "nextjs",
-    "react",
-    "google-maps"
+    "react"
   ]
 }

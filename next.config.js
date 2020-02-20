@@ -2,8 +2,7 @@ const { parsed: localEnv } = require("dotenv").config();
 
 module.exports = {
   env: {
-    GMAPS_KEY: process.env.GMAPS_KEY,
-    SERVER_URL: process.env.SERVER_URL
+    HT_PUBLISHABLE_KEY: process.env.HT_PUBLISHABLE_KEY
   },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Note: we provide webpack above so you should not `require` it
@@ -12,12 +11,6 @@ module.exports = {
 
     // Setup dotenv
     config.plugins.push(new webpack.EnvironmentPlugin(localEnv));
-
-    // enable SVG processing
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"]
-    });
 
     return config;
   },
