@@ -14,10 +14,6 @@ Placeline is a ReactJS/NextJS sample application to track the movement of your m
 
 Placeline is built with HyperTrack Views.
 
-<p align="center">
-  <img src="public/placeline.gif" />
-</p>
-
 ## Overview
 
 - [Sample Frontend Integration: Placeline](#sample-frontend-integration-placeline)
