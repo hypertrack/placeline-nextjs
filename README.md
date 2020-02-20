@@ -1,5 +1,5 @@
 <a href="https://www.hypertrack.com/">
-    <img src="https://www.hypertrack.com/green.eeca143346e01b96d600.svg" alt="HyperTrack logo" title="HyperTrack" align="right" height="40" />
+    <img src="https://hypertrack-blog-img.s3-us-west-2.amazonaws.com/Green0svg.svg" alt="HyperTrack logo" title="HyperTrack" align="right" height="40" />
 </a>
 
 # Sample Frontend Integration: Placeline
