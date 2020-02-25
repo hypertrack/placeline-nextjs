@@ -8,7 +8,7 @@
 ![](https://img.shields.io/david/hypertrack/placeline-nextjs?style=flat-square)
 ![](https://img.shields.io/github/license/hypertrack/placeline-nextjs?style=flat-square)
 
-Placeline is a ReactJS/NextJS sample application to track the movement of your mobile workforce through the workday. Use this web app to track the live location, activity, device status and places visited by your business assets; track summaries for drives, steps, places and inactive hours; drill down to device locations organized in activity segments for each day, and export selected segments to 3rd party applications such as expense management software.
+Placeline is a ReactJS/NextJS sample application to track the movement of your mobile workforce through the workday. Use this web app to track the live location, activity, and outages of your business assets; track summaries for miles driven, steps walked, stops taken and inactive times; drill down to device locations organized in activity segments for each day, and export selected segments to 3rd party applications such as expense management software.
 
 > 💬 [Check out this blog post](https://hypertrack.com/blog/2019/09/09/open-sourcing-placeline-a-sample-app-to-track-the-movement-history-of-your-workforce/) to learn why this is important, how HyperTrack is using it internally, and how it all ties together with HyperTrack platform.
 
@@ -35,8 +35,8 @@ Placeline is built with HyperTrack Views.
 | <img src="public/dashboard.png"> |
 
 - Embed HyperTrack Views in a dashboard
-- Map the live locations of devices
-- Search and browse live tracking status and days tracked
+- Map the live locations of all devices
+- Search and browse devices by day and timezone
 - Drill down to live tracking views and day’s history for each device
 - Review tracking summaries for duration, distance, activities, and more
 - Export tracking summaries
