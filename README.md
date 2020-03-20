@@ -107,7 +107,7 @@ Once the main page (_index.js_) is opened, it will load an embeddable view from 
 
 ## Related
 
-This web application is using [HyperTrack Views](https://docs.hypertrack.com/#guides-track-devices-with-the-api-embed-views-in-your-dashboard).
+This web application is using [HyperTrack Views](https://www.hypertrack.com/docs/guides/track-devices-with-api#embed-views-in-your-dashboard).
 
 ## Credits
 
